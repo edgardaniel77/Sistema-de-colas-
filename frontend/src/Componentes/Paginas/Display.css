@@ -3,7 +3,7 @@
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; /* Alineado con la tipografía de Bootstrap */
   max-width: 600px;
   margin: 30px auto;
-  padding: 20px;
+  padding: 30px;
   background: linear-gradient(to right, #ffffff, #e6e6e6); /* Gradiente más suave y profesional */
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra más ligera para un efecto suave */
@@ -76,7 +76,7 @@ input[type="text"] {
 /* Botones generales con estilos modernos */
 .button {
   width: 100%;
-  padding: 10px;
+  padding: 20px;
   border: none;
   border-radius: 8px;
   color: white;
