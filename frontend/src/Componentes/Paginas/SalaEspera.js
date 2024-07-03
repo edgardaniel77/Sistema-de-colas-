@@ -3,15 +3,16 @@ import './SalaEspera.css';
 
 const SalaEspera = () => {
   const [tickets, setTickets] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const ticketInterval = setInterval(() => {
       const areas = [
         'Secretaría General',
         'Préstamos',
         'Cartera y Cobro',
-        'Planilla de Jubilados', 
-         'Beneficios',
+        'Planilla de Jubilados',
+        'Beneficios',
       ];
       const newTicket = {
         number: Math.floor(Math.random() * 100) + 1,
@@ -20,14 +21,26 @@ const SalaEspera = () => {
       setTickets(prevTickets => [...prevTickets, newTicket]);
     }, 5000); // Generar un nuevo número cada 5 segundos
 
-    return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // Actualizar el tiempo cada segundo
+
+    return () => {
+      clearInterval(ticketInterval);
+      clearInterval(timeInterval);
+    }; // Limpiar los intervalos cuando el componente se desmonte
   }, []);
 
   return (
     <div className="sala-espera-container">
       <div className="header">
-        <h2>Sala de Espera</h2>
-        <p>Números de ticket:</p>
+        <h2>Espere su turno</h2>
+        <div className="clock">
+          {currentTime.toLocaleTimeString()}
+        </div>
+      </div>
+      <div className="informative-banner">
+        <p> Bienvenidos a INJUPEMP por favor espere su turno </p>
       </div>
       <div className="ticket-section">
         <div className="ticket-list">

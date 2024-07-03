@@ -1,62 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Grid } from 'gridjs';
+import 'gridjs/dist/theme/mermaid.css';
 import './GestionUsuarios.css';
+import UsuariosGrid from './UsuariosGrid'; // Asegúrate de importar UsuariosGrid desde el archivo correcto
 
-// Componente para cada campo del formulario
-const CampoFormulario = ({ etiqueta, tipo, valor, onChange, opciones }) => {
-  return (
-    <label>
-      {etiqueta}:
-      {tipo === "select" ? (
-        <select value={valor} onChange={onChange}>
-          {opciones.map(opcion => (
-            <option key={opcion.value} value={opcion.value}>
-              {opcion.label}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input type={tipo} value={valor} onChange={onChange} />
-      )}
-    </label>
-  );
-};
+const CampoFormulario = ({ etiqueta, tipo, valor, onChange, opciones }) => (
+  <label>
+    {etiqueta}:
+    {tipo === "select" ? (
+      <select value={valor} onChange={onChange}>
+        {opciones.map(opcion => (
+          <option key={opcion.value} value={opcion.value}>
+            {opcion.label}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <input type={tipo} value={valor} onChange={onChange} />
+    )}
+  </label>
+);
 
-// Modal Component para mostrar los Detalles de usuarios
-const Modal = ({ usuarios, onClose }) => {
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Detalles de Usuarios</h2>
-        {usuarios.length > 0 ? (
-          <ul>
-            {usuarios.map(usuario => (
-              <li key={usuario.id}>
-                <p><strong>Nombre:</strong> {usuario.nombre}</p>
-                <p><strong>Identificación:</strong> {usuario.identificacion}</p>
-                <p><strong>Correo Electrónico:</strong> {usuario.email}</p>
-                <p><strong>Celular:</strong> {usuario.celular}</p>
-                <p><strong>Rol:</strong> {usuario.rol}</p>
-                <p><strong>Área:</strong> {usuario.area}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No hay usuarios registrados.</p>
-        )}
-        <button onClick={onClose}>Cerrar</button>
-      </div>
-    </div>
-  );
-};
-
-// Formulario de usuario
 const FormularioUsuario = ({ usuario, onSubmit, modoEdicion, onChange }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(usuario);
   };
 
-  // Opciones para el selector de roles y áreas
   const roles = [
     { value: "administrador", label: "Administrador" },
     { value: "usuario", label: "Usuario" }
@@ -84,12 +55,21 @@ const FormularioUsuario = ({ usuario, onSubmit, modoEdicion, onChange }) => {
   );
 };
 
-// Componente principal de gestión de usuarios
 const GestionUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState({ nombre: '', identificacion: '', email: '', celular: '', contraseña: '', rol: '', area: '' });
   const [modoEdicion, setModoEdicion] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate(); // Reemplaza history por navigate
+
+  useEffect(() => {
+    // Simulación de carga inicial de usuarios
+    // Aquí podrías realizar una llamada a una API para obtener los usuarios existentes
+    const usuariosIniciales = [
+      { id: 1, nombre: 'Usuario 1', identificacion: '1234567890123', email: 'usuario1@example.com', celular: '12345678', contraseña: 'password', rol: 'usuario', area: 'prestamos' },
+      { id: 2, nombre: 'Usuario 2', identificacion: '9876543210987', email: 'usuario2@example.com', celular: '87654321', contraseña: 'password', rol: 'administrador', area: 'beneficios' }
+    ];
+    setUsuarios(usuariosIniciales);
+  }, []);
 
   const handleUsuarioChange = (e, key) => {
     const { value } = e.target;
@@ -117,12 +97,8 @@ const GestionUsuarios = () => {
     setUsuarioSeleccionado(prev => ({ ...prev, [key]: value }));
   };
 
-  const abrirModalUsuarios = () => {
-    setShowModal(true);
-  };
-
-  const cerrarModal = () => {
-    setShowModal(false);
+  const toggleDataGrid = () => {
+    navigate('/usuarios-grid'); // Navega a la página de UsuariosGrid al hacer clic en el botón
   };
 
   const crearEditarUsuario = (usuario) => {
@@ -130,7 +106,6 @@ const GestionUsuarios = () => {
       alert('Por favor, complete todos los campos');
       return;
     }
-    // Validaciones adicionales
     if (usuario.identificacion.length !== 13) {
       alert('La identificación debe tener 13 dígitos');
       return;
@@ -144,28 +119,29 @@ const GestionUsuarios = () => {
       return;
     }
     if (modoEdicion) {
-      const actualizados = usuarios.map(u => u.id === usuarioSeleccionado.id ? {...u, ...usuario} : u);
+      const actualizados = usuarios.map(u => u.id === usuarioSeleccionado.id ? { ...u, ...usuario } : u);
       setUsuarios(actualizados);
       alert('Usuario editado exitosamente');
     } else {
-      const nuevoUsuario = {...usuario, id: usuarios.length + 1};
+      const nuevoUsuario = { ...usuario, id: usuarios.length + 1 };
       setUsuarios([...usuarios, nuevoUsuario]);
+      alert('Usuario creado exitosamente'); // Añade un mensaje de confirmación
     }
     setUsuarioSeleccionado({ nombre: '', identificacion: '', email: '', celular: '', contraseña: '', rol: '', area: '' });
     setModoEdicion(false);
+    navigate('/usuarios-grid'); // Navega automáticamente a la página de UsuariosGrid después de crear o editar usuario
   };
 
   return (
     <div className="gestion-usuarios-container">
       <h2>Gestión de Usuarios</h2>
-      <button onClick={abrirModalUsuarios}>Ver Usuarios</button>
+      <button onClick={toggleDataGrid}>Ver Lista de Usuarios</button>
       <FormularioUsuario
         usuario={usuarioSeleccionado}
         onSubmit={crearEditarUsuario}
         modoEdicion={modoEdicion}
         onChange={handleUsuarioChange}
       />
-      {showModal && <Modal usuarios={usuarios} onClose={cerrarModal} />}
     </div>
   );
 };

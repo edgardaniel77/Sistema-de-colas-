@@ -11,11 +11,14 @@ import Seguridad from './Componentes/Paginas/Seguridad';
 import Configuraciones from './Componentes/Paginas/Configuraciones';
 import Login from './Componentes/Login';
 import Display from './Componentes/Paginas/Display';
+import UsuariosGrid from './Componentes/Paginas/UsuariosGrid'; // Asegúrate de importar UsuariosGrid
+
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [usuarios, setUsuarios] = useState([]); // Define usuarios como estado
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
@@ -27,6 +30,11 @@ function App() {
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
+  // Ejemplo de cómo podrías actualizar `usuarios`
+  const actualizarUsuarios = (nuevosUsuarios) => {
+    setUsuarios(nuevosUsuarios);
   };
 
   return (
@@ -52,6 +60,7 @@ function App() {
                 <Route path="/llamadas" element={<Llamadas />} />
                 <Route path="/turnos" element={<Turnos />} />
                 <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
+                <Route path="/usuarios-grid" element={<UsuariosGrid usuarios={usuarios} />} /> 
                 <Route path="/informes" element={<Informes />} />
                 <Route path="/seguridad" element={<Seguridad />} />
                 <Route path="/configuraciones" element={<Configuraciones />} />
