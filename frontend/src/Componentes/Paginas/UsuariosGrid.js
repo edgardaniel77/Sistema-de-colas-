@@ -1,56 +1,82 @@
 import React, { useEffect, useRef } from 'react';
 import { Grid } from 'gridjs';
 import 'gridjs/dist/theme/mermaid.css';
+import { html } from 'gridjs';
 
-const UsuariosGrid = ({ usuarios, actualizarUsuarios }) => {
+const UsuariosGrid = ({ usuarios, onEditarUsuario, onEliminarUsuario }) => {
   const gridRef = useRef(null);
+  const gridInstance = useRef(null);
 
   useEffect(() => {
     if (gridRef.current) {
-      const grid = new Grid({
-        columns: ["Nombre", "Identificación", "Correo Electrónico", "Celular", "Rol", "Área"],
+      gridInstance.current = new Grid({
+        columns: [
+          "Nombre",
+          "Identificación",
+          "Correo Electrónico",
+          "Celular",
+          "Rol",
+          "Área",
+          {
+            name: "Acciones",
+            formatter: (cell, row) => {
+              const id = row.cells[1].data;
+              return html(`
+                <button class="boton-accion editar" data-id="${id}">Editar</button>
+                <button class="boton-accion eliminar" data-id="${id}">Eliminar</button>
+              `);
+            },
+          },
+        ],
         data: usuarios.map(usuario => [
           usuario.nombre,
           usuario.identificacion,
           usuario.email,
           usuario.celular,
           usuario.rol,
-          usuario.area
+          usuario.area,
         ]),
         pagination: true,
-        search: true
+        search: true,
       });
 
-      gridRef.current.innerHTML = ''; // Limpiar cualquier contenido previo
-      grid.render(gridRef.current);
+      gridInstance.current.render(gridRef.current);
+
+      const handleEditClick = (event) => {
+        if (event.target.classList.contains('editar')) {
+          const id = event.target.getAttribute('data-id');
+          const usuario = usuarios.find(u => u.identificacion === id);
+          if (usuario) {
+            onEditarUsuario(usuario);
+          }
+        }
+      };
+
+      const handleDeleteClick = (event) => {
+        if (event.target.classList.contains('eliminar')) {
+          const id = event.target.getAttribute('data-id');
+          const confirmacion = window.confirm('¿Estás seguro de eliminar este usuario?');
+          if (confirmacion) {
+            onEliminarUsuario(id);
+          }
+        }
+      };
+
+      gridRef.current.addEventListener('click', handleEditClick);
+      gridRef.current.addEventListener('click', handleDeleteClick);
 
       return () => {
-        grid.destroy(); // Limpiar y destruir la instancia de Grid al desmontar el componente
+        if (gridInstance.current) {
+          gridInstance.current.destroy();
+          gridInstance.current = null;
+        }
+        if (gridRef.current) {
+          gridRef.current.removeEventListener('click', handleEditClick);
+          gridRef.current.removeEventListener('click', handleDeleteClick);
+        }
       };
     }
-  }, [usuarios]);
-
-  useEffect(() => {
-    // Actualiza el grid cuando cambian los usuarios
-    if (gridRef.current) {
-      const grid = new Grid({
-        columns: ["Nombre", "Identificación", "Correo Electrónico", "Celular", "Rol", "Área"],
-        data: usuarios.map(usuario => [
-          usuario.nombre,
-          usuario.identificacion,
-          usuario.email,
-          usuario.celular,
-          usuario.rol,
-          usuario.area
-        ]),
-        pagination: true,
-        search: true
-      });
-
-      gridRef.current.innerHTML = ''; // Limpiar cualquier contenido previo
-      grid.render(gridRef.current);
-    }
-  }, [usuarios]);
+  }, [usuarios, onEditarUsuario, onEliminarUsuario]);
 
   return <div ref={gridRef} />;
 };

@@ -9,7 +9,8 @@ import {
   faMoneyBillAlt,
   faBook,
   faHandHoldingUsd,
-  faPrint
+  faPrint,
+  faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
 import jsPDF from 'jspdf';
 
@@ -25,8 +26,8 @@ const Display = () => {
     if (identityNumber.trim() === '') {
       return 'Por favor, ingrese su número de identidad.';
     }
-    if (!/^\d+$/.test(identityNumber)) {
-      return 'El número de identidad debe contener solo dígitos.';
+    if (!/^\d{13}$/.test(identityNumber)) {
+      return 'El número de identidad debe contener solo 13 dígitos.';
     }
     return '';
   };
@@ -88,6 +89,10 @@ const Display = () => {
     pdf.save('ticket.pdf');
   };
 
+  const handleBackClick = () => {
+    setStep(prevStep => prevStep - 1);
+  };
+
   return (
     <div className="display-container">
       <h1>Bienvenido a INJUPEMP</h1>
@@ -137,6 +142,9 @@ const Display = () => {
           <button className="button selection-button" onClick={() => handleAttentionType('Normal')}>
             <FontAwesomeIcon icon={faUser} /> Atención Normal
           </button>
+          <button className="button back-button" onClick={handleBackClick}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Volver
+          </button>
         </div>
       )}
       {step === 3 && (
@@ -156,6 +164,9 @@ const Display = () => {
           </button>
           <button className="button selection-button" onClick={() => handleServiceSelection('Planilla Jubilados')}>
             <FontAwesomeIcon icon={faUserAlt} /> Planilla Jubilados
+          </button>
+          <button className="button back-button" onClick={handleBackClick}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Volver
           </button>
         </div>
       )}

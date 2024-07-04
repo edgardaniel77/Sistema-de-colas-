@@ -39,9 +39,6 @@ const SalaEspera = () => {
           {currentTime.toLocaleTimeString()}
         </div>
       </div>
-      <div className="informative-banner">
-        <p> Bienvenidos a INJUPEMP por favor espere su turno </p>
-      </div>
       <div className="ticket-section">
         <div className="ticket-list">
           <ul>
@@ -57,6 +54,9 @@ const SalaEspera = () => {
           <h2>INJUPEMP</h2>
           <img src="https://pbs.twimg.com/media/FiGf0zFXoAAqitK.jpg" alt="Publicidad" />
         </div>
+      </div>
+      <div className="informative-banner">
+        <p>Bienvenidos a INJUPEMP, por favor espere su turno.</p>
       </div>
     </div>
   );

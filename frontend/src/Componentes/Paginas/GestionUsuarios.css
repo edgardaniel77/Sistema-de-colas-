@@ -1,3 +1,57 @@
+/* Botón para acciones del formulario */
+.boton-submit {
+  background-color: #28a745; /* Verde de Bootstrap para acciones positivas */
+  color: white;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.boton-submit:hover {
+  background-color: #218838;
+}
+
+/* Botones de acción para editar y eliminar */
+.boton-accion {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 5px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background-color: #007bff; /* Azul de Bootstrap */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.boton-accion:hover {
+  background-color: #0056b3;
+}
+
+.boton-accion.editar {
+  background-color: #ffc107; /* Amarillo para editar */
+}
+
+.boton-accion.editar:hover {
+  background-color: #e0a800;
+}
+
+.boton-accion.eliminar {
+  background-color: #dc3545; /* Rojo para eliminar */
+}
+
+.boton-accion.eliminar:hover {
+  background-color: #c82333;
+}
+
+/* Otros estilos... */
+
 /* Estilos generales del contenedor */
 .gestion-usuarios-container {
   max-width: 600px;
@@ -35,21 +89,6 @@
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   background-color: #e9ecef; /* Fondo suave para distinguir fácilmente el input */
-}
-
-/* Botón para acciones del formulario */
-.boton-submit {
-  background-color: #28a745; /* Verde de Bootstrap para acciones positivas */
-  color: white;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
-}
-
-.boton-submit:hover {
-  background-color: #218838;
 }
 
 /* Estilos para el modal */

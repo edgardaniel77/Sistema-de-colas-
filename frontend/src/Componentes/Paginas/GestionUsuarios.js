@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid } from 'gridjs';
 import 'gridjs/dist/theme/mermaid.css';
 import './GestionUsuarios.css';
-import UsuariosGrid from './UsuariosGrid'; // Asegúrate de importar UsuariosGrid desde el archivo correcto
+import UsuariosGrid from './UsuariosGrid';
 
 const CampoFormulario = ({ etiqueta, tipo, valor, onChange, opciones }) => (
   <label>
@@ -59,11 +58,10 @@ const GestionUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState({ nombre: '', identificacion: '', email: '', celular: '', contraseña: '', rol: '', area: '' });
   const [modoEdicion, setModoEdicion] = useState(false);
-  const navigate = useNavigate(); // Reemplaza history por navigate
+  const [mostrarListaUsuarios, setMostrarListaUsuarios] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulación de carga inicial de usuarios
-    // Aquí podrías realizar una llamada a una API para obtener los usuarios existentes
     const usuariosIniciales = [
       { id: 1, nombre: 'Usuario 1', identificacion: '1234567890123', email: 'usuario1@example.com', celular: '12345678', contraseña: 'password', rol: 'usuario', area: 'prestamos' },
       { id: 2, nombre: 'Usuario 2', identificacion: '9876543210987', email: 'usuario2@example.com', celular: '87654321', contraseña: 'password', rol: 'administrador', area: 'beneficios' }
@@ -98,7 +96,7 @@ const GestionUsuarios = () => {
   };
 
   const toggleDataGrid = () => {
-    navigate('/usuarios-grid'); // Navega a la página de UsuariosGrid al hacer clic en el botón
+    setMostrarListaUsuarios(true);
   };
 
   const crearEditarUsuario = (usuario) => {
@@ -125,23 +123,44 @@ const GestionUsuarios = () => {
     } else {
       const nuevoUsuario = { ...usuario, id: usuarios.length + 1 };
       setUsuarios([...usuarios, nuevoUsuario]);
-      alert('Usuario creado exitosamente'); // Añade un mensaje de confirmación
+      alert('Usuario creado exitosamente');
     }
     setUsuarioSeleccionado({ nombre: '', identificacion: '', email: '', celular: '', contraseña: '', rol: '', area: '' });
     setModoEdicion(false);
-    navigate('/usuarios-grid'); // Navega automáticamente a la página de UsuariosGrid después de crear o editar usuario
+    setMostrarListaUsuarios(false);
+  };
+
+  const handleEditarUsuario = (usuario) => {
+    setUsuarioSeleccionado(usuario);
+    setModoEdicion(true);
+    setMostrarListaUsuarios(false);
+  };
+
+  const handleEliminarUsuario = (id) => {
+    const actualizados = usuarios.filter(u => u.identificacion !== id);
+    setUsuarios(actualizados);
+    alert('Usuario eliminado exitosamente');
   };
 
   return (
     <div className="gestion-usuarios-container">
       <h2>Gestión de Usuarios</h2>
-      <button onClick={toggleDataGrid}>Ver Lista de Usuarios</button>
-      <FormularioUsuario
-        usuario={usuarioSeleccionado}
-        onSubmit={crearEditarUsuario}
-        modoEdicion={modoEdicion}
-        onChange={handleUsuarioChange}
-      />
+      {!mostrarListaUsuarios ? (
+        <button onClick={toggleDataGrid}>Ver Lista de Usuarios</button>
+      ) : (
+        <>
+          <button onClick={() => setMostrarListaUsuarios(false)}>Volver a Formulario</button>
+          <UsuariosGrid usuarios={usuarios} onEditarUsuario={handleEditarUsuario} onEliminarUsuario={handleEliminarUsuario} />
+        </>
+      )}
+      {!mostrarListaUsuarios && (
+        <FormularioUsuario
+          usuario={usuarioSeleccionado}
+          onSubmit={crearEditarUsuario}
+          modoEdicion={modoEdicion}
+          onChange={handleUsuarioChange}
+        />
+      )}
     </div>
   );
 };

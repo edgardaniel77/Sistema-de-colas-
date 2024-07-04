@@ -7,11 +7,12 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin: 30px auto;
-  width: 88%;
+  width: 80%;
   max-width: 1200px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative; /* Asegura que los elementos hijos con posición absoluta se coloquen en relación con este contenedor */
 }
 
 .header {
@@ -84,17 +85,21 @@
   background-color: #f1f1f1;
 }
 
+.advertisement {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  margin: 10px;
+  margin-bottom: 60px; /* Agrega espacio en la parte inferior */
+}
+
 .advertisement img {
   max-width: 100%;
   height: auto;
   border-radius: 5px;
   margin-top: 10px;
-}
-
-.advertisement h2 {
-  text-align: center;
-  margin-bottom: 15px;
-  color: black;
 }
 
 @media (max-width: 768px) {
@@ -113,17 +118,21 @@
 }
 
 .informative-banner {
-  background-color: #ffcc00;
+  background-color: rgba(255, 204, 0, 0.7);
   color: #333;
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
   box-sizing: border-box;
   border-radius: 8px;
-  margin-bottom: 20px;
   box-shadow: 0 2px 4px #0000001a;
-  position: relative;
+  position: absolute; /* Posiciona el banner de manera absoluta respecto al contenedor padre */
+  bottom: 0; /* Coloca el banner en la parte inferior */
+  left: 0; /* Alinea el banner al borde izquierdo */
+  font-size: 1.0em; /* Aumentar el tamaño del texto */
+  font-family: Arial, sans-serif;
   padding: 8px 0;
+  z-index: 1000; /* Asegura que el banner esté por encima de otros elementos */
 }
 
 .informative-banner p {
