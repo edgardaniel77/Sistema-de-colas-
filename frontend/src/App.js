@@ -12,6 +12,7 @@ import Configuraciones from './Componentes/Paginas/Configuraciones';
 import Login from './Componentes/Login';
 import Display from './Componentes/Paginas/Display';
 import UsuariosGrid from './Componentes/Paginas/UsuariosGrid'; // Asegúrate de importar UsuariosGrid
+import { TicketProvider } from './Componentes/Paginas/TicketContext'; // Importa el TicketProvider
 
 import './App.css';
 
@@ -38,39 +39,41 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className={`container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-        {isLoggedIn && (
-          <Sidebar
-            isLoggedIn={isLoggedIn}
-            handleLogout={handleLogout}
-            toggleSidebar={toggleSidebar}
-            isCollapsed={isSidebarCollapsed}
-          />
-        )}
-        <main className="main-content">
-          <Routes>
-            {!isLoggedIn ? (
-              <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-            ) : (
-              <>
-                <Route path="/" element={<Inicio />} />
-                <Route path="/display" element={<Display />} />
-                <Route path="/sala-espera" element={<SalaEspera />} />
-                <Route path="/llamadas" element={<Llamadas />} />
-                <Route path="/turnos" element={<Turnos />} />
-                <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
-                <Route path="/usuarios-grid" element={<UsuariosGrid usuarios={usuarios} />} /> 
-                <Route path="/informes" element={<Informes />} />
-                <Route path="/seguridad" element={<Seguridad />} />
-                <Route path="/configuraciones" element={<Configuraciones />} />
-              </>
-            )}
-            <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/login"} />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <TicketProvider> {/* Envolver la aplicación con TicketProvider */}
+      <Router>
+        <div className={`container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+          {isLoggedIn && (
+            <Sidebar
+              isLoggedIn={isLoggedIn}
+              handleLogout={handleLogout}
+              toggleSidebar={toggleSidebar}
+              isCollapsed={isSidebarCollapsed}
+            />
+          )}
+          <main className="main-content">
+            <Routes>
+              {!isLoggedIn ? (
+                <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+              ) : (
+                <>
+                  <Route path="/" element={<Inicio />} />
+                  <Route path="/display" element={<Display />} />
+                  <Route path="/sala-espera" element={<SalaEspera />} />
+                  <Route path="/llamadas" element={<Llamadas />} />
+                  <Route path="/turnos" element={<Turnos />} />
+                  <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
+                  <Route path="/usuarios-grid" element={<UsuariosGrid usuarios={usuarios} />} /> 
+                  <Route path="/informes" element={<Informes />} />
+                  <Route path="/seguridad" element={<Seguridad />} />
+                  <Route path="/configuraciones" element={<Configuraciones />} />
+                </>
+              )}
+              <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/login"} />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </TicketProvider>
   );
 }
 

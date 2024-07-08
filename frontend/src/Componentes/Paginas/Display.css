@@ -61,11 +61,12 @@ form {
   margin-top: 20px;
 }
 
-input[type="text"] {
+input[type="number"] {
   width: 100%;
   padding: 12px;
+  font-size: 19px;
   margin-bottom: 16px;
-  border-radius: 8px;
+  border-radius: 18px;
   border: 1px solid #ced4da; /* Borde estándar de Bootstrap */
   background: #ffffff; /* Fondo blanco para claridad */
   font-family: 'Arial Black', sans-serif; /* Cambia el estilo de las letras a Arial Black */

@@ -1,34 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './SalaEspera.css';
+import { TicketContext } from './TicketContext';
 
 const SalaEspera = () => {
-  const [tickets, setTickets] = useState([]);
+  const { tickets } = useContext(TicketContext); // Obtén tickets del contexto
+
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Actualiza la hora cada segundo
   useEffect(() => {
-    const ticketInterval = setInterval(() => {
-      const areas = [
-        'Secretaría General',
-        'Préstamos',
-        'Cartera y Cobro',
-        'Planilla de Jubilados',
-        'Beneficios',
-      ];
-      const newTicket = {
-        number: Math.floor(Math.random() * 100) + 1,
-        area: areas[Math.floor(Math.random() * areas.length)]
-      };
-      setTickets(prevTickets => [...prevTickets, newTicket]);
-    }, 5000); // Generar un nuevo número cada 5 segundos
-
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000); // Actualizar el tiempo cada segundo
+    }, 1000);
 
     return () => {
-      clearInterval(ticketInterval);
       clearInterval(timeInterval);
-    }; // Limpiar los intervalos cuando el componente se desmonte
+    };
   }, []);
 
   return (
@@ -44,7 +31,7 @@ const SalaEspera = () => {
           <ul>
             {tickets.map((ticket, index) => (
               <li key={index}>
-                <strong>Área:</strong> {ticket.area}
+                <strong>Área:</strong> {ticket.service}
                 <strong>Número:</strong> A-{ticket.number.toString().padStart(3, '0')}
               </li>
             ))}

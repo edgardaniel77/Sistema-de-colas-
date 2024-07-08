@@ -6,6 +6,7 @@ import logoSIAC from './imagenes/Logo siac.png';
 const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // Nuevo estado para el mensaje de error
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
@@ -19,11 +20,11 @@ const Login = ({ onLoginSuccess }) => {
       if (data.access) {
         onLoginSuccess(data);
       } else {
-        alert('Autenticación fallida');
+        setErrorMessage('Autenticación fallida');
       }
     } catch (error) {
       console.error('Hubo un error con el login', error);
-      alert('Autenticación fallida');
+      setErrorMessage('Hubo un error con el login');
     }
   };
 
@@ -49,6 +50,7 @@ const Login = ({ onLoginSuccess }) => {
           Iniciar sesión
         </button>
       </form>
+      {errorMessage && <div className="error-message">{errorMessage}</div>} {/* Mostrar mensaje de error si existe */}
     </div>
   );
 };

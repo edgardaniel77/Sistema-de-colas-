@@ -1,18 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useContext, useRef, useCallback, useEffect } from 'react';
 import './Display.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUserCircle,
-  faUser,
-  faUserAlt,
-  faThumbsUp,
-  faMoneyBillAlt,
-  faBook,
-  faHandHoldingUsd,
-  faPrint,
-  faArrowLeft
-} from '@fortawesome/free-solid-svg-icons';
+import { faUserCircle, faUser, faUserAlt, faThumbsUp, faMoneyBillAlt, faBook, faHandHoldingUsd, faPrint, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import jsPDF from 'jspdf';
+import { TicketContext } from './TicketContext';
 
 const Display = () => {
   const [step, setStep] = useState(1);
@@ -21,6 +12,7 @@ const Display = () => {
   const [service, setService] = useState('');
   const [errors, setErrors] = useState({});
   const inputRef = useRef(null);
+  const { tickets, addTicket } = useContext(TicketContext);
 
   const validateIdentityNumber = () => {
     if (identityNumber.trim() === '') {
@@ -50,25 +42,32 @@ const Display = () => {
 
   const handleServiceSelection = (serviceSelected) => {
     setService(serviceSelected);
-    setIdentityNumber(''); // Clear identity number
+    const newTicket = {
+      identityNumber,
+      attentionType,
+      service: serviceSelected,
+      number: tickets.length + 1
+    };
+    addTicket(newTicket);
+    setIdentityNumber('');
     setStep(4);
   };
 
   const handleNumberClick = (number) => {
-    setIdentityNumber(prevNumber => prevNumber + number);
+    setIdentityNumber((prevNumber) => prevNumber + number);
     if (inputRef.current) {
       inputRef.current.focus();
     }
   };
 
   const handleBackspaceClick = () => {
-    setIdentityNumber(prevNumber => prevNumber.slice(0, -1));
+    setIdentityNumber((prevNumber) => prevNumber.slice(0, -1));
   };
 
   const handleKeyPress = useCallback((e) => {
     const validKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     if (validKeys.includes(e.key)) {
-      setIdentityNumber(prevNumber => prevNumber + e.key);
+      setIdentityNumber((prevNumber) => prevNumber + e.key);
     }
   }, []);
 
@@ -80,8 +79,10 @@ const Display = () => {
   }, [handleKeyPress]);
 
   const printTicket = () => {
+    const counter = tickets.length;
     const pdf = new jsPDF();
-    pdf.text('INJUPEMP Ticket de Turno A-14', 20, 20);
+    const ticketText = `INJUPEMP Ticket de Turno A-${counter}`;
+    pdf.text(ticketText, 20, 20);
     pdf.text(`Número de Identidad: ${identityNumber}`, 20, 30);
     pdf.text(`Tipo de Atención: ${attentionType}`, 20, 40);
     pdf.text(`Servicio: ${service}`, 20, 50);
@@ -90,7 +91,7 @@ const Display = () => {
   };
 
   const handleBackClick = () => {
-    setStep(prevStep => prevStep - 1);
+    setStep((prevStep) => prevStep - 1);
   };
 
   return (
@@ -101,7 +102,7 @@ const Display = () => {
           <label>
             Ingrese su Número de Identidad:
             <input
-              type="text"
+              type="number"
               value={identityNumber}
               onChange={(e) => setIdentityNumber(e.target.value)}
               required
@@ -115,17 +116,15 @@ const Display = () => {
                 key={number}
                 className="numeric-button"
                 onClick={() => handleNumberClick(number.toString())}
-                style={{ gridColumn: ((index % 3) + 1) }} // Asegura que los botones se distribuyen en las tres primeras columnas
-                type="button" // Asegura que los botones no envíen el formulario
+                style={{ gridColumn: ((index % 3) + 1) }}
+                type="button"
               >
                 {number}
               </button>
             ))}
-            {/* Botón cero con clase específica */}
             <button className="numeric-button zero" onClick={() => handleNumberClick('0')} type="button">
               0
             </button>
-            {/* Botón de borrar */}
             <button className="numeric-button backspace" onClick={handleBackspaceClick} type="button">
               ←
             </button>
@@ -175,8 +174,12 @@ const Display = () => {
           <h2>Confirmación de Servicio</h2>
           <p>Servicio seleccionado: {service}</p>
           <p>Tipo de atención: {attentionType}</p>
+          <p>Número de ticket: {tickets.length}</p>
           <button className="button print-button" onClick={printTicket}>
             <FontAwesomeIcon icon={faPrint} /> Imprimir Ticket
+          </button>
+          <button className="button back-button" onClick={() => setStep(1)}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Volver al Inicio
           </button>
         </div>
       )}
