@@ -1,60 +1,52 @@
 import React, { createContext, useState } from 'react';
 
-export const TicketContext = createContext();
+const TicketContext = createContext();
 
-export const TicketProvider = ({ children }) => {
-  // Estados para los tickets y la gestión de la cola
+const TicketProvider = ({ children }) => {
   const [tickets, setTickets] = useState([]);
-  const [ticketCount, setTicketCount] = useState(0);
   const [attendedTickets, setAttendedTickets] = useState([]);
   const [currentTicket, setCurrentTicket] = useState(null);
-  const [showQueue, setShowQueue] = useState(true);
+  const [ticketCounter, setTicketCounter] = useState(0);
 
-  // Función para añadir un nuevo ticket
   const addTicket = (newTicket) => {
-    const updatedTickets = [...tickets, { ...newTicket, number: ticketCount + 1 }];
-    setTickets(updatedTickets);
-    setTicketCount(ticketCount + 1);
+    setTicketCounter(prevCounter => prevCounter + 1);
+    setTickets([...tickets, { ...newTicket, number: ticketCounter + 1 }]);
   };
 
-  // Función para llamar al siguiente ticket
   const callNextTicket = () => {
-    const nextTicket = tickets[0];
-    if (nextTicket) {
+    if (tickets.length > 0) {
+      const nextTicket = tickets[0];
+      setTickets(tickets.slice(1));
       setCurrentTicket(nextTicket);
-      setTickets((prevTickets) => prevTickets.slice(1));
     }
   };
 
-  // Función para finalizar un ticket
   const finishTicket = () => {
     if (currentTicket) {
-      setAttendedTickets((prevAttendedTickets) => [...prevAttendedTickets, currentTicket]);
+      setAttendedTickets([...attendedTickets, currentTicket]);
       setCurrentTicket(null);
     }
   };
 
-  // Función para alternar la visibilidad de la cola de tickets
-  const toggleQueueVisibility = () => {
-    setShowQueue((prevShowQueue) => !prevShowQueue);
-  };
+  // Deriving waitingTickets from tickets and currentTicket
+  const waitingTickets = currentTicket ? tickets : [currentTicket, ...tickets].filter(Boolean);
 
-  // Definición del contexto con los valores y funciones necesarios
   return (
     <TicketContext.Provider
       value={{
         tickets,
+        attendedTickets,
+        currentTicket,
         addTicket,
         callNextTicket,
         finishTicket,
-        attendedTickets,
-        currentTicket,
-        showQueue,
-        toggleQueueVisibility,
-        setCurrentTicket, // Asegúrate de incluir setCurrentTicket en el contexto
+        ticketCounter,
+        waitingTickets // Adding waitingTickets to the context value
       }}
     >
       {children}
     </TicketContext.Provider>
   );
 };
+
+export { TicketProvider, TicketContext };

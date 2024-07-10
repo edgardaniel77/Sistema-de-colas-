@@ -12,7 +12,7 @@ const Display = () => {
   const [service, setService] = useState('');
   const [errors, setErrors] = useState({});
   const inputRef = useRef(null);
-  const { tickets, addTicket } = useContext(TicketContext);
+  const { addTicket, ticketCounter } = useContext(TicketContext);
 
   const validateIdentityNumber = () => {
     if (identityNumber.trim() === '') {
@@ -46,7 +46,6 @@ const Display = () => {
       identityNumber,
       attentionType,
       service: serviceSelected,
-      number: tickets.length + 1
     };
     addTicket(newTicket);
     setIdentityNumber('');
@@ -79,9 +78,9 @@ const Display = () => {
   }, [handleKeyPress]);
 
   const printTicket = () => {
-    const counter = tickets.length;
+    const formattedNumber = `A-${ticketCounter.toString().padStart(3, '0')}`;
     const pdf = new jsPDF();
-    const ticketText = `INJUPEMP Ticket de Turno A-${counter}`;
+    const ticketText = `INJUPEMP Ticket de Turno ${formattedNumber}`;
     pdf.text(ticketText, 20, 20);
     pdf.text(`Número de Identidad: ${identityNumber}`, 20, 30);
     pdf.text(`Tipo de Atención: ${attentionType}`, 20, 40);
@@ -174,12 +173,12 @@ const Display = () => {
           <h2>Confirmación de Servicio</h2>
           <p>Servicio seleccionado: {service}</p>
           <p>Tipo de atención: {attentionType}</p>
-          <p>Número de ticket: {tickets.length}</p>
+          <p>Número de ticket: A-{ticketCounter.toString().padStart(3, '0')}</p>
           <button className="button print-button" onClick={printTicket}>
             <FontAwesomeIcon icon={faPrint} /> Imprimir Ticket
           </button>
-          <button className="button back-button" onClick={() => setStep(1)}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Volver al Inicio
+          <button className="button back-button" onClick={handleBackClick}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Volver
           </button>
         </div>
       )}
