@@ -25,7 +25,7 @@ const Llamadas = () => {
       {/* Sección del ticket actual */}
       {currentTicket && (
         <div className="current-ticket">
-          <h3>Ticket Actual: A-{currentTicket.number.toString().padStart(3, '0')}</h3>
+          <h3>Ticket Actual: {currentTicket.number.toString().padStart(3, '0')}</h3>
           <p>Tipo de Atención: {currentTicket.attentionType}</p>
           <p>Servicio: {currentTicket.service}</p>
           {/* Botón para finalizar el ticket actual */}
@@ -41,7 +41,7 @@ const Llamadas = () => {
         <ul>
           {attendedTickets.map((ticket) => (
             <li key={ticket.number}>
-              Ticket A-{ticket.number.toString().padStart(3, '0')}
+              Ticket {ticket.number.toString().padStart(3, '0')}
               <strong>Área:</strong> {ticket.service}
             </li>
           ))}
@@ -52,7 +52,7 @@ const Llamadas = () => {
         <ul>
           {waitingTickets.map((ticket) => (
             <li key={ticket.number}>
-              Ticket A-{ticket.number.toString().padStart(3, '0')}
+              Ticket {ticket.number.toString().padStart(3, '0')}
               <strong>Área:</strong> {ticket.service}
             </li>
           ))}

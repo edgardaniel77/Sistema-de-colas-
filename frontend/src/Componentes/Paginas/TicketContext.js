@@ -6,11 +6,36 @@ const TicketProvider = ({ children }) => {
   const [tickets, setTickets] = useState([]);
   const [attendedTickets, setAttendedTickets] = useState([]);
   const [currentTicket, setCurrentTicket] = useState(null);
-  const [ticketCounter, setTicketCounter] = useState(0);
+  const [ticketCounter, setTicketCounter] = useState(0); // Estado para el contador de tickets generados
 
   const addTicket = (newTicket) => {
+    // Incrementar el contador de tickets
     setTicketCounter(prevCounter => prevCounter + 1);
-    setTickets([...tickets, { ...newTicket, number: ticketCounter + 1 }]);
+
+    // Lógica para asignar el número de ticket según el servicio seleccionado
+    let ticketPrefix = '';
+    switch (newTicket.service) {
+      case 'Secretaría General':
+        ticketPrefix = 'SG';
+        break;
+      case 'Préstamos':
+        ticketPrefix = 'PR';
+        break;
+      case 'Cartera Y Cobro':
+        ticketPrefix = 'CC';
+        break;
+      case 'Beneficios':
+        ticketPrefix = 'BN';
+        break;
+      case 'Planilla Jubilados':
+        ticketPrefix = 'PJ';
+        break;
+      default:
+        ticketPrefix = 'NA';
+    }
+  
+    const formattedNumber = `${ticketPrefix}-${ticketCounter.toString().padStart(3, '0')}`;
+    setTickets([...tickets, { ...newTicket, number: formattedNumber }]);
   };
 
   const callNextTicket = () => {
@@ -40,8 +65,8 @@ const TicketProvider = ({ children }) => {
         addTicket,
         callNextTicket,
         finishTicket,
-        ticketCounter,
-        waitingTickets // Adding waitingTickets to the context value
+        ticketCounter, // Pasando el contador de tickets al contexto
+        waitingTickets // Agregando waitingTickets al valor del contexto
       }}
     >
       {children}

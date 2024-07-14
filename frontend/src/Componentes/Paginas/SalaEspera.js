@@ -32,7 +32,7 @@ const SalaEspera = () => {
             {tickets.map((ticket, index) => (
               <li key={index}>
                 <strong>Área:</strong> {ticket.service}
-                <strong>Número:</strong> A-{ticket.number.toString().padStart(3, '0')}
+                <strong>Número:</strong> {ticket.number.toString().padStart(3, '0')}
               </li>
             ))}
           </ul>
