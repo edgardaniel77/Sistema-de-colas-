@@ -1,11 +1,9 @@
 import React, { useContext } from 'react';
-import './Llamadas.css';
+import './Llamadas.css'; 
 import { TicketContext } from './TicketContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 const Llamadas = () => {
-  const { tickets, callNextTicket, finishTicket, currentTicket } = useContext(TicketContext);
+  const { callNextTicket, finishTicket, currentTicket, attendedTickets, waitingTickets } = useContext(TicketContext);
 
   const handleCallNext = () => {
     callNextTicket();
@@ -18,40 +16,46 @@ const Llamadas = () => {
   return (
     <div className="llamadas-container">
       <h2>Llamadas</h2>
-      <div className="llamadas-buttons">
-        <button className="llamadas-button" onClick={handleCallNext}>
-          <FontAwesomeIcon icon={faUser} /> Llamar Siguiente
-        </button>
-        <button className="llamadas-button" onClick={handleFinishTicket}>
-          <FontAwesomeIcon icon={faThumbsUp} /> Finalizar Atención
-        </button>
-      </div>
-      <div className="current-ticket">
-        {currentTicket ? (
-          <div>
-            <h3>Atendiendo a:</h3>
-            <p>Número de ticket: {currentTicket.number}</p>
-            <p>Identidad: {currentTicket.identityNumber}</p>
-            <p>Servicio: {currentTicket.service}</p>
-          </div>
-        ) : (
-          <p>No hay tickets en espera.</p>
-        )}
-      </div>
+      
+      {/* Botón para llamar al siguiente ticket */}
+      <button className="button call-button" onClick={handleCallNext}>
+        Llamar al siguiente ticket
+      </button>
+      
+      {/* Sección del ticket actual */}
+      {currentTicket && (
+        <div className="current-ticket">
+          <h3>Ticket Actual: {currentTicket.number.toString().padStart(3, '0')}</h3>
+          <p>Tipo de Atención: {currentTicket.attentionType}</p>
+          <p>Servicio: {currentTicket.service}</p>
+          {/* Botón para finalizar el ticket actual */}
+          <button className="button finish-button" onClick={handleFinishTicket}>
+            Finalizar Ticket
+          </button>
+        </div>
+      )}
+      
+      {/* Lista de tickets atendidos */}
       <div className="attended-tickets">
-        <h3>Atendidos</h3>
+        <h3>Tickets Atendidos</h3>
         <ul>
-          {tickets.length > 0 ? (
-            tickets.map((ticket) => (
-              <li key={ticket.number}>
-                <p>Número de ticket: {ticket.number}</p>
-                <p>Identidad: {ticket.identityNumber}</p>
-                <p>Servicio: {ticket.service}</p>
-              </li>
-            ))
-          ) : (
-            <li>No hay tickets atendidos aún.</li>
-          )}
+          {attendedTickets.map((ticket) => (
+            <li key={ticket.number}>
+              Ticket {ticket.number.toString().padStart(3, '0')}
+              <strong>Área:</strong> {ticket.service}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="queue-list">
+        <h3>Tickets en espera</h3>
+        <ul>
+          {waitingTickets.map((ticket) => (
+            <li key={ticket.number}>
+              Ticket {ticket.number.toString().padStart(3, '0')}
+              <strong>Área:</strong> {ticket.service}
+            </li>
+          ))}
         </ul>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { Grid } from 'gridjs';
-import 'gridjs/dist/theme/mermaid.css';
 import { html } from 'gridjs';
 
 const UsuariosGrid = ({ usuarios, onEditarUsuario, onEliminarUsuario }) => {

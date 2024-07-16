@@ -12,7 +12,7 @@ const Display = () => {
   const [service, setService] = useState('');
   const [errors, setErrors] = useState({});
   const inputRef = useRef(null);
-  const { tickets, addTicket } = useContext(TicketContext);
+  const { addTicket, ticketCounter, tickets } = useContext(TicketContext); // Añadir tickets
 
   const validateIdentityNumber = () => {
     if (identityNumber.trim() === '') {
@@ -46,12 +46,12 @@ const Display = () => {
       identityNumber,
       attentionType,
       service: serviceSelected,
-      number: tickets.length + 1
     };
     addTicket(newTicket);
     setIdentityNumber('');
     setStep(4);
   };
+  
 
   const handleNumberClick = (number) => {
     setIdentityNumber((prevNumber) => prevNumber + number);
@@ -79,9 +79,33 @@ const Display = () => {
   }, [handleKeyPress]);
 
   const printTicket = () => {
-    const counter = tickets.length;
+    // Obtener el número de ticket con el formato adecuado
+    let ticketPrefix = '';
+    switch (service) {
+      case 'Secretaría General':
+        ticketPrefix = 'SG';
+        break;
+      case 'Préstamos':
+        ticketPrefix = 'PR';
+        break;
+      case 'Cartera Y Cobro':
+        ticketPrefix = 'CC';
+        break;
+      case 'Beneficios':
+        ticketPrefix = 'BN';
+        break;
+      case 'Planilla Jubilados':
+        ticketPrefix = 'PJ';
+        break;
+      default:
+        ticketPrefix = 'NA';
+    }
+  
+    const formattedNumber = `${ticketPrefix}-${ticketCounter.toString().padStart(3, '0')}`;
+  
+    // Crear el PDF con jsPDF
     const pdf = new jsPDF();
-    const ticketText = `INJUPEMP Ticket de Turno A-${counter}`;
+    const ticketText = `INJUPEMP Ticket de Turno ${formattedNumber}`;
     pdf.text(ticketText, 20, 20);
     pdf.text(`Número de Identidad: ${identityNumber}`, 20, 30);
     pdf.text(`Tipo de Atención: ${attentionType}`, 20, 40);
@@ -89,6 +113,7 @@ const Display = () => {
     pdf.text('Gracias por su visita.', 20, 70);
     pdf.save('ticket.pdf');
   };
+  
 
   const handleBackClick = () => {
     setStep((prevStep) => prevStep - 1);
@@ -174,12 +199,12 @@ const Display = () => {
           <h2>Confirmación de Servicio</h2>
           <p>Servicio seleccionado: {service}</p>
           <p>Tipo de atención: {attentionType}</p>
-          <p>Número de ticket: {tickets.length}</p>
+          <p>Número de ticket: {tickets[tickets.length - 1].number}</p>
           <button className="button print-button" onClick={printTicket}>
             <FontAwesomeIcon icon={faPrint} /> Imprimir Ticket
           </button>
-          <button className="button back-button" onClick={() => setStep(1)}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Volver al Inicio
+          <button className="button back-button" onClick={handleBackClick}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Volver
           </button>
         </div>
       )}

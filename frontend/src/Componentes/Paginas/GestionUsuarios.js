@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'gridjs/dist/theme/mermaid.css';
 import './GestionUsuarios.css';
 import UsuariosGrid from './UsuariosGrid';
 
