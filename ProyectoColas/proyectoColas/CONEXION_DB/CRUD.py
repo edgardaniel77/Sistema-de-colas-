@@ -1,33 +1,4 @@
-import tkinter as tk
-
-# Importar los módulos restantes de tkinter
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox #Msj POP para verificar registros se realizo con exito
-
-
-
-
-class FormularioUsuarios:
-
-    def Formulario():
-        
-        try:
-            base = tk()
-            base.geometry("1200x300")
-            base.tit1e("Formu1ario Usuarios")
-            base.mainloop()
-        
-        except ValueError as error:
-            print("ERROR al mostrar la interfaz,error: {}".format(error))
-
-    Formulario()
-
-
-#METODO - C R U D
-
-
-import mysql.connector
+import mysql.connector #METODO - C R U D
 
 def crear_usuario(nombre, identificacion, correo, telefono, password, rol, area):
     conn = mysql.connector.connect(
