@@ -37,7 +37,8 @@ const FormularioUsuario = ({ usuario, onSubmit, modoEdicion, onChange }) => {
     { value: "prestamos", label: "Préstamos" },
     { value: "cartera_y_cobro", label: "Cartera y Cobro" },
     { value: "planilla_jubilados", label: "Planilla Jubilados" },
-    { value: "beneficios", label: "Beneficios" }
+    { value: "beneficios", label: "Beneficios" },
+    { value: "Informatica", label: "Informatica" }
   ];
 
   return (
