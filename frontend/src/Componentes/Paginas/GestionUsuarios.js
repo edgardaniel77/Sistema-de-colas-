@@ -1,168 +1,290 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './GestionUsuarios.css';
-import UsuariosGrid from './UsuariosGrid';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
+import axios from 'axios';
 
-const CampoFormulario = ({ etiqueta, tipo, valor, onChange, opciones }) => (
-  <label>
-    {etiqueta}:
-    {tipo === "select" ? (
-      <select value={valor} onChange={onChange}>
-        {opciones.map(opcion => (
-          <option key={opcion.value} value={opcion.value}>
-            {opcion.label}
-          </option>
-        ))}
-      </select>
-    ) : (
-      <input type={tipo} value={valor} onChange={onChange} />
-    )}
-  </label>
-);
 
-const FormularioUsuario = ({ usuario, onSubmit, modoEdicion, onChange }) => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(usuario);
-  };
+/*PAQUETE DE ALERTAS POP */
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const AlertaPOP = withReactContent(Swal)
 
-  const roles = [
-    { value: "administrador", label: "Administrador" },
-    { value: "usuario", label: "Usuario" }
-  ];
 
-  const areas = [
-    { value: "secretaria_general", label: "Secretaría General" },
-    { value: "prestamos", label: "Préstamos" },
-    { value: "cartera_y_cobro", label: "Cartera y Cobro" },
-    { value: "planilla_jubilados", label: "Planilla Jubilados" },
-    { value: "beneficios", label: "Beneficios" },
-    { value: "Informatica", label: "Informatica" }
-  ];
 
-  return (
-    <form onSubmit={handleSubmit} className="formulario-usuario">
-      <CampoFormulario etiqueta="Nombre" tipo="text" valor={usuario.nombre} onChange={(e) => onChange(e, 'nombre')} />
-      <CampoFormulario etiqueta="Identificación (13 dígitos)" tipo="text" valor={usuario.identificacion} onChange={(e) => onChange(e, 'identificacion')} />
-      <CampoFormulario etiqueta="Correo Electrónico" tipo="email" valor={usuario.email} onChange={(e) => onChange(e, 'email')} />
-      <CampoFormulario etiqueta="Número de Celular" tipo="text" valor={usuario.celular} onChange={(e) => onChange(e, 'celular')} />
-      <CampoFormulario etiqueta="Contraseña" tipo="password" valor={usuario.contraseña} onChange={(e) => onChange(e, 'contraseña')} />
-      <CampoFormulario etiqueta="Rol" tipo="select" valor={usuario.rol} onChange={(e) => onChange(e, 'rol')} opciones={roles} />
-      <CampoFormulario etiqueta="Área" tipo="select" valor={usuario.area} onChange={(e) => onChange(e, 'area')} opciones={areas} />
-      <button type="submit" className="boton-submit">{modoEdicion ? 'Editar' : 'Crear'} Usuario</button>
-    </form>
-  );
-};
+function USUARIOS(){
 
-const GestionUsuarios = () => {
-  const [usuarios, setUsuarios] = useState([]);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState({ nombre: '', identificacion: '', email: '', celular: '', contraseña: '', rol: '', area: '' });
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [mostrarListaUsuarios, setMostrarListaUsuarios] = useState(false);
-  const navigate = useNavigate();
+    const [CODIGO,setCODIGO] = useState("");
+    const [NOMBRE,setNombre] = useState("");
+    const [IDENTIFICACION,setIdentificacion] = useState("");
+    const [CORREO,setCorreo] = useState("");
+    const [TELEFONO,setTelefono] = useState("");
+    const [PASSWORD,setPassword] = useState("");
+    const [ROL,setRol] = useState("");
+    const [AREA,setArea] = useState("");
 
-  useEffect(() => {
-    const usuariosIniciales = [
-      { id: 1, nombre: 'Usuario 1', identificacion: '1234567890123', email: 'usuario1@example.com', celular: '12345678', contraseña: 'password', rol: 'usuario', area: 'prestamos' },
-      { id: 2, nombre: 'Usuario 2', identificacion: '9876543210987', email: 'usuario2@example.com', celular: '87654321', contraseña: 'password', rol: 'administrador', area: 'beneficios' }
+    const [Editar,setEditar] = useState(false);
+
+    const limpiarCampos = () => {
+        setCODIGO("");
+        setNombre("");
+        setIdentificacion("");
+        setCorreo("");
+        setTelefono("");
+        setPassword("");
+        setRol("");
+        setArea("");
+    };
+
+    const Cancelar = () => {
+        setEditar(false);
+        limpiarCampos();
+    };
+
+    const roles = [
+        { value: "administrador", label: "Administrador" },
+        { value: "usuario", label: "Usuario" }
     ];
-    setUsuarios(usuariosIniciales);
-  }, []);
+    
+    const areas = [
+        { value: "secretaria_general", label: "Secretaría General" },
+        { value: "prestamos", label: "Préstamos" },
+        { value: "cartera_y_cobro", label: "Cartera y Cobro" },
+        { value: "planilla_jubilados", label: "Planilla Jubilados" },
+        { value: "beneficios", label: "Beneficios" },
+        { value: "Informatica", label: "Informatica" }
+    ];    
+    
 
-  const handleUsuarioChange = (e, key) => {
-    const { value } = e.target;
-
-    if (key === 'nombre' && !/^[a-zA-Z\s]*$/.test(value)) {
-      alert('El nombre solo debe contener letras');
-      return;
+    const [UsuariosList,setUsuarios] = useState ([]);
+    
+    /*POST USUARIOS - CRUD/DataBase*/
+    const addUser = ()=>{
+        axios.post("http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=InsertUsuario",{
+            NOMBRE:NOMBRE,
+            IDENTIFICACION:IDENTIFICACION,
+            CORREO:CORREO,
+            TELEFONO:TELEFONO,
+            PASSWORD:PASSWORD,
+            ROL:ROL,
+            AREA:AREA
+        }).then(()=>{
+            limpiarCampos();
+            getUser();
+            AlertaPOP.fire({
+                title: <strong>!Registro Exitoso!</strong>,
+                html: <i>!El Usuario {NOMBRE} fue Registrado con Éxito!</i>,
+                icon: 'success',
+                timer:3000                            
+            })          
+        });
     }
 
-    if (key === 'identificacion' && !/^\d*$/.test(value)) {
-      alert('La identificación solo debe contener números');
-      return;
+
+    /*UPDATE USUARIOS - CRUD/DataBase*/
+    const UPDATE = ()=>{
+        axios.put("http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=UpdateUsuario",{
+            CODIGO:CODIGO,
+            NOMBRE:NOMBRE,
+            IDENTIFICACION:IDENTIFICACION,
+            CORREO:CORREO,
+            TELEFONO:TELEFONO,
+            PASSWORD:PASSWORD,
+            ROL:ROL,
+            AREA:AREA
+        }).then(()=>{
+            limpiarCampos();
+            Cancelar();
+            AlertaPOP.fire({
+                title: <strong>!Actualización Exitosa!</strong>,
+                html: <i>!El Usuario {NOMBRE} fue actualizado con Éxito!</i>,
+                icon: 'success',
+                timer:3000                            
+            })             
+        });
     }
 
-    if (key === 'celular' && !/^\d*$/.test(value)) {
-      alert('El número de celular solo debe contener números');
-      return;
+
+    /*GET USUARIOS - DATAGRID*/
+    const getUser = ()=>{
+        axios.get("http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=GetUsuarios").then((response)=>{
+            setUsuarios(response.data);
+        });
     }
 
-    if (key === 'celular' && value.length > 8) {
-      alert('El número de celular debe tener 8 dígitos');
-      return;
+    getUser();
+
+
+    /*UPDATE USUARIOS - DATAGRID*/
+    const EditarUsuario = (val)=>{
+        setEditar(true)
+
+        setCODIGO(val.CODIGO);
+        setNombre(val.NOMBRE);
+        setIdentificacion(val.IDENTIFICACION);
+        setCorreo(val.CORREO);
+        setTelefono(val.TELEFONO);
+        setPassword(val.PASSWORD);
+        setRol(val.ROL);
+        setArea(val.AREA);
     }
 
-    setUsuarioSeleccionado(prev => ({ ...prev, [key]: value }));
-  };
 
-  const toggleDataGrid = () => {
-    setMostrarListaUsuarios(true);
-  };
+    /*DELETE USUARIOS - CRUD/DataBase*/
+    const BorrarUser = (val)=>{
 
-  const crearEditarUsuario = (usuario) => {
-    if (!usuario.nombre || !usuario.identificacion || !usuario.email || !usuario.celular || !usuario.contraseña || !usuario.rol || !usuario.area) {
-      alert('Por favor, complete todos los campos');
-      return;
+        Swal.fire({
+            title: 'Confirma la Eliminación?',
+            html: "<i>¿Desea eliminar el Usuario <strong>"+val.NOMBRE+"</strong>?</i>",
+            icon:'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo!',
+            
+        }).then((result)=>{
+            if(result.isConfirmed) {
+                axios.delete(`http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=DeleteUsuario/${val.CODIGO}`).then(()=>{
+                    limpiarCampos();
+                    Cancelar();
+                    
+                    Swal.fire(
+                        'Eliminado!',
+                        val.NOMBRE+ ' fue eliminado.',
+                        'success'
+                    );  
+                                       
+                });                
+            }
+        });         
     }
-    if (usuario.identificacion.length !== 13) {
-      alert('La identificación debe tener 13 dígitos');
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(usuario.email)) {
-      alert('Correo electrónico no válido');
-      return;
-    }
-    if (usuario.celular.length !== 8) {
-      alert('El número de celular debe tener 8 dígitos');
-      return;
-    }
-    if (modoEdicion) {
-      const actualizados = usuarios.map(u => u.id === usuarioSeleccionado.id ? { ...u, ...usuario } : u);
-      setUsuarios(actualizados);
-      alert('Usuario editado exitosamente');
-    } else {
-      const nuevoUsuario = { ...usuario, id: usuarios.length + 1 };
-      setUsuarios([...usuarios, nuevoUsuario]);
-      alert('Usuario creado exitosamente');
-    }
-    setUsuarioSeleccionado({ nombre: '', identificacion: '', email: '', celular: '', contraseña: '', rol: '', area: '' });
-    setModoEdicion(false);
-    setMostrarListaUsuarios(false);
-  };
 
-  const handleEditarUsuario = (usuario) => {
-    setUsuarioSeleccionado(usuario);
-    setModoEdicion(true);
-    setMostrarListaUsuarios(false);
-  };
+    
+    
 
-  const handleEliminarUsuario = (id) => {
-    const actualizados = usuarios.filter(u => u.identificacion !== id);
-    setUsuarios(actualizados);
-    alert('Usuario eliminado exitosamente');
-  };
 
-  return (
-    <div className="gestion-usuarios-container">
-      <h2>Gestión de Usuarios</h2>
-      {!mostrarListaUsuarios ? (
-        <button onClick={toggleDataGrid}>Ver Lista de Usuarios</button>
-      ) : (
-        <>
-          <button onClick={() => setMostrarListaUsuarios(false)}>Volver a Formulario</button>
-          <UsuariosGrid usuarios={usuarios} onEditarUsuario={handleEditarUsuario} onEliminarUsuario={handleEliminarUsuario} />
-        </>
-      )}
-      {!mostrarListaUsuarios && (
-        <FormularioUsuario
-          usuario={usuarioSeleccionado}
-          onSubmit={crearEditarUsuario}
-          modoEdicion={modoEdicion}
-          onChange={handleUsuarioChange}
-        />
-      )}
-    </div>
-  );
-};
+    return(
+        <div className="USUARIOS">
+            
+            <div className="DATOS">
+            <label>Nombre: <input value={NOMBRE}
+            onChange={(event)=>{
+                setNombre(event.target.value);
+            }}
+            type="text"/></label>
 
-export default GestionUsuarios;
+            <label>Identificación: <input value={IDENTIFICACION}
+            onChange={(event)=>{
+                setIdentificacion(event.target.value);
+            }} type="text"/></label>
+
+            <label>Correo Electrónico: <input value={CORREO}
+            onChange={(event)=>{
+                setCorreo(event.target.value);
+            }} type="text"/></label>
+
+            <label>Número de Celular: <input value={TELEFONO}
+            onChange={(event)=>{
+                setTelefono(event.target.value);
+            }} type="text"/></label> 
+
+            <label>Contraseña: <input  value={PASSWORD}
+            onChange={(event)=>{
+                setPassword(event.target.value);
+            }} type="password"/></label>
+
+
+            <label>Rol: 
+                <select value={ROL} onChange={(event) => setRol(event.target.value)}>
+                    <option value="" className="placeholder-option">Seleccione una opción</option>
+                    {roles.map((role) => (
+                        <option key={role.value} value={role.value}>
+                            {role.label}
+                        </option>
+                    ))}
+                </select>
+            </label>
+
+            <label>Área: 
+                <select value={AREA} onChange={(event) => setArea(event.target.value)}>
+                    <option value="" className="placeholder-option">Seleccione una opción</option>
+                    {areas.map((area) => (
+                        <option key={area.value} value={area.value}>
+                            {area.label}
+                        </option>
+                    ))}
+                </select>
+            </label>
+             
+        
+
+            {
+                Editar==true?
+                <div>
+                    <button className='btn btn-warning m-2' onClick={UPDATE}>Actualizar</button>
+                    <button className='btn btn-info m-2' onClick={Cancelar}>Cancelar</button>
+                </div>
+                
+                :<button type="button" className='btn btn-success m-2' onClick={addUser}>Registrar</button>
+            }
+
+            
+                       
+            </div>            
+                
+
+                <table className="table">
+                    <thead className="table-dark">
+                        <tr>
+                        <th scope="col">CODIGO</th>
+                        <th scope="col">NOMBRE</th>
+                        <th scope="col">IDENTIFICACION</th>
+                        <th scope="col">CORREO</th>
+                        <th scope="col">TELEFONO</th>
+                        <th scope="col">PASSWORD</th>
+                        <th scope="col">ROL</th>
+                        <th scope="col">AREA</th>
+                        <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {
+                            UsuariosList.map((val,key)=>{
+                                return <tr>
+                                            <th scope="row">{val.CODIGO}</th>
+                                            <td>{val.NOMBRE}</td>
+                                            <td>{val.IDENTIFICACION}</td>
+                                            <td>{val.CORREO}</td>
+                                            <td>{val.TELEFONO}</td>
+                                            <td>{val.PASSWORD}</td>
+                                            <td>{val.ROL}</td>
+                                            <td>{val.AREA}</td>
+
+                                            <td>
+                                                <div className="btn-group" role="group" aria-label="Basic example">
+                                                    <button type="button"
+                                                    onClick={()=>{
+                                                        EditarUsuario(val);
+                                                    }}
+                                                    className="btn btn-info">Editar</button>
+                                                    
+                                                    
+                                                    <button type="button" onClick={()=>{
+                                                        BorrarUser(val);
+                                                    }}  className="btn btn-danger">Elimiar</button>
+                                                </div>
+                                            </td>
+                                        </tr>                      
+                            })
+                        }
+                        
+                    </tbody>
+                </table>
+        
+            </div>
+
+    );
+}
+
+export default USUARIOS;
+

@@ -12,7 +12,8 @@ const Display = () => {
   const [service, setService] = useState('');
   const [errors, setErrors] = useState({});
   const inputRef = useRef(null);
-  const { addTicket, ticketCounter, tickets } = useContext(TicketContext); // Añadir tickets
+  const { addTicket, ticketCounter, tickets } = useContext(TicketContext);
+  
 
   const validateIdentityNumber = () => {
     if (identityNumber.trim() === '') {
@@ -46,12 +47,12 @@ const Display = () => {
       identityNumber,
       attentionType,
       service: serviceSelected,
+      number: `${serviceSelected.slice(0, 2).toUpperCase()}-${ticketCounter + 1}`
     };
     addTicket(newTicket);
     setIdentityNumber('');
     setStep(4);
   };
-  
 
   const handleNumberClick = (number) => {
     setIdentityNumber((prevNumber) => prevNumber + number);
@@ -79,7 +80,6 @@ const Display = () => {
   }, [handleKeyPress]);
 
   const printTicket = () => {
-    // Obtener el número de ticket con el formato adecuado
     let ticketPrefix = '';
     switch (service) {
       case 'Secretaría General':
@@ -102,19 +102,70 @@ const Display = () => {
     }
   
     const formattedNumber = `${ticketPrefix}-${ticketCounter.toString().padStart(3, '0')}`;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString();
+    const formattedTime = currentDate.toLocaleTimeString();
   
-    // Crear el PDF con jsPDF
     const pdf = new jsPDF();
-    const ticketText = `INJUPEMP Ticket de Turno ${formattedNumber}`;
-    pdf.text(ticketText, 20, 20);
-    pdf.text(`Número de Identidad: ${identityNumber}`, 20, 30);
-    pdf.text(`Tipo de Atención: ${attentionType}`, 20, 40);
-    pdf.text(`Servicio: ${service}`, 20, 50);
-    pdf.text('Gracias por su visita.', 20, 70);
+    const pageWidth = pdf.internal.pageSize.width;
+  
+    // Header
+    pdf.setFontSize(18);
+    pdf.setFont('helvetica', 'bold');
+    const headerText = 'INJUPEMP';
+    const headerTextWidth = pdf.getTextWidth(headerText);
+    pdf.text(headerText, (pageWidth - headerTextWidth) / 2, 20);
+    
+    pdf.setFontSize(14);
+    const subHeaderText = 'Bienvenido ';
+    const subHeaderTextWidth = pdf.getTextWidth(subHeaderText);
+    pdf.text(subHeaderText, (pageWidth - subHeaderTextWidth) / 2, 30);
+  
+    // Ticket Info
+    pdf.setFontSize(50);
+    pdf.setFont('helvetica', 'bold');
+    const ticketText = `Ticket: ${formattedNumber}`;
+    const ticketTextWidth = pdf.getTextWidth(ticketText);
+    pdf.text(ticketText, (pageWidth - ticketTextWidth) / 2, 50);
+    
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'normal');
+    const attentionTypeText = `Tipo de Atención: ${attentionType}`;
+    const serviceText = `Servicio: ${service}`;
+    const attentionTypeTextWidth = pdf.getTextWidth(attentionTypeText);
+    const serviceTextWidth = pdf.getTextWidth(serviceText);
+    pdf.text(attentionTypeText, (pageWidth - attentionTypeTextWidth) / 2, 65);
+    pdf.text(serviceText, (pageWidth - serviceTextWidth) / 2, 80);
+    
+    // Date and Time
+    pdf.setFontSize(12);
+    const dateText = `Fecha: ${formattedDate}`;
+    const timeText = `Hora: ${formattedTime}`;
+    const dateTextWidth = pdf.getTextWidth(dateText);
+    const timeTextWidth = pdf.getTextWidth(timeText);
+    pdf.text(dateText, (pageWidth - dateTextWidth) / 2, 100);
+    pdf.text(timeText, (pageWidth - timeTextWidth) / 2, 115);
+  
+    // Footer
+    pdf.setFontSize(10);
+    pdf.setFont('arial', 'italic');
+    const footerText = 'Gracias por su visita.';
+    const footerTextWidth = pdf.getTextWidth(footerText);
+    pdf.text(footerText, (pageWidth - footerTextWidth) / 2, 130);
+    
+    // Draw a border around the ticket
+    pdf.rect(10, 10, pageWidth - 20, 140); // Adjust dimensions as needed
+  
     pdf.save('ticket.pdf');
+  
+    // Redirige al paso 1 para reiniciar el flujo
+    setTimeout(() => {
+      setStep(1);
+    }, 1000); // Ajusta el tiempo si es necesario para asegurar que el PDF se haya guardado
   };
   
-
+  
+  
   const handleBackClick = () => {
     setStep((prevStep) => prevStep - 1);
   };
@@ -199,7 +250,7 @@ const Display = () => {
           <h2>Confirmación de Servicio</h2>
           <p>Servicio seleccionado: {service}</p>
           <p>Tipo de atención: {attentionType}</p>
-          <p>Número de ticket: {tickets[tickets.length - 1].number}</p>
+          <p>Número de ticket: {tickets[tickets.length - 1]?.number}</p>
           <button className="button print-button" onClick={printTicket}>
             <FontAwesomeIcon icon={faPrint} /> Imprimir Ticket
           </button>
@@ -213,3 +264,4 @@ const Display = () => {
 };
 
 export default Display;
+

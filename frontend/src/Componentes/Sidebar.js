@@ -6,7 +6,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
 
-const Sidebar = ({ isLoggedIn, handleLogout, toggleSidebar, isCollapsed }) => {
+const Sidebar = ({ isLoggedIn, handleLogout, toggleSidebar, isCollapsed, showSidebar }) => {
+  if (!showSidebar) return null;
+
   return (
     <nav className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-logo">

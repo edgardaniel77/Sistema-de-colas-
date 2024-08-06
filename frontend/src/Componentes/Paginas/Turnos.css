@@ -1,3 +1,4 @@
+/* General container styles */
 .turnos-container {
   background: linear-gradient(to right, #ffffff, #e6e6e6);
   display: flex;
@@ -6,21 +7,15 @@
   padding: 20px;
 }
 
-.area-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
+/* Button styles */
 .area-button,
 .action-buttons button,
 .btn-anular,
 .btn-preferencial,
 .btn-atender,
 .btn-finalizar,
-.btn-transferir {
+.btn-transferir,
+.transfer-button {
   padding: 10px 20px;
   margin: 10px;
   font-size: 1rem;
@@ -28,58 +23,69 @@
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, filter 0.3s;
 }
 
 .area-button {
   background-color: #007bff;
 }
 
-.action-buttons button {
-  background-color: #28a745;
+.action-buttons button,
+.btn-finalizar,
+.btn-atender,
+.btn-preferencial {
+  background-color: #ffc107;
 }
 
 .btn-anular {
   background-color: #dc3545;
 }
 
-.btn-preferencial {
-  background-color: #ffc107;
-}
-
-.btn-atender {
-  background-color: #ffc107;
-}
-
-.btn-finalizar {
-  background-color: #ffc107;
-}
-
 .btn-transferir {
-  background-color: #b0c2c1;
+  background-color: #28a745; 
 }
 
+.transfer-button {
+  background-color: #007bff;
+}
+
+/* Hover effects */
 .area-button:hover,
 .action-buttons button:hover,
 .btn-anular:hover,
 .btn-preferencial:hover,
 .btn-atender:hover,
 .btn-finalizar:hover,
-.btn-transferir:hover {
-  filter: brightness(90%); /* Reduce ligeramente la luminosidad al pasar el cursor */
+.btn-transferir:hover,
+.transfer-button:hover {
+  filter: brightness(90%);
 }
 
+/* Status section styles */
 .status-section {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
   margin-top: 20px;
 }
 
 .status-item {
   text-align: center;
+  flex: 1;
+  position: relative;
 }
 
+.status-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 1px; /* Ancho del separador */
+  background-color: #ccc; /* Color del separador */
+}
+
+/* Transfer modal styles */
 .transfer-modal {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 20px;
@@ -87,10 +93,7 @@
   margin-top: 20px;
 }
 
-.transfer-modal h3 {
-  margin-bottom: 10px;
-}
-
+.transfer-modal h3,
 .transfer-modal p {
   margin-bottom: 20px;
 }
@@ -102,20 +105,3 @@
   justify-content: center;
 }
 
-.transfer-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  color: white;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.transfer-button {
-  background-color: #007bff;
-}
-
-.transfer-button:hover {
-  filter: brightness(90%);
-}

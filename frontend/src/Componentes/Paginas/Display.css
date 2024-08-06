@@ -1,23 +1,26 @@
-/* Estilos base para el contenedor y los textos */
 .display-container {
-  font-family: 'Arial Black', sans-serif; /* Alineado con la tipografía de Arial Black */
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 30px;
-  background: linear-gradient(to right, #ffffff, #e6e6e6); /* Gradiente más suave y profesional */
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra más ligera para un efecto suave */
+  font-family: 'Arial Black', sans-serif;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  width: 60%;
+  margin: 20px 0 20px 200px; /* Márgenes: superior, derecho, inferior, izquierdo */
+  background: linear-gradient(to right, #ffffff, #e6e6e6); /* Fondo claro */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
+
+
 
 /* Configuración del teclado numérico */
 .numeric-keypad {
   display: grid;
-  grid-template-columns: repeat(3, 70px); /* Reduce las columnas */
-  gap: 25px; /* Ajusta el espacio entre los botones */
+  grid-template-columns: repeat(3, 100px);
+  gap: 15px;
   justify-content: center; /* Centra el teclado numérico horizontalmente */
   margin: 0 auto;
-  padding: 10px;
+  padding: 20px;
 }
 
 /* Estilos para botones numéricos */
@@ -25,35 +28,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px; /* Reduce el ancho */
-  height: 50px; /* Reduce la altura */
+  width: 80px;
+  height: 70px;
   border: none;
-  border-radius: 8px; /* Cambia a forma cuadrada con bordes ligeramente redondeados */
+  border-radius: 8px;
   background-color: #007bff;
   color: white;
-  font-size: 2.1em; /* Ajusta el tamaño del texto */
+  font-size: 2.6em;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin: 8px; /* Ajusta el margen para separar los botones */
-  font-family: 'Arial Black', sans-serif; /* Cambia el estilo de las letras a Arial Black */
+  margin: 6px;
+  font-family: 'Arial Black', sans-serif;
 }
 
 /* Aplicar esta regla específica al botón cero */
 .numeric-button.zero {
-  grid-column: 2 / span 1; /* Centra el botón cero en la segunda columna */
+  grid-column: 2 / span 1;
 }
 
 .numeric-button:hover {
   transform: scale(1.1);
-  background-color: #0056b3; /* Efecto hover coherente con los estilos de Bootstrap */
+  background-color: #0056b3;
 }
 
 /* Estilos de texto y títulos */
 h1, h2 {
-  color: #343a40; /* Color de texto oscuro de Bootstrap */
+  color: #343a40;
   text-align: center;
-  font-family: 'Arial Black', sans-serif; /* Cambia el estilo de las letras a Arial Black */
+  font-family: 'Arial Black', sans-serif;
 }
 
 /* Estilización de formularios y entradas de texto */
@@ -67,34 +70,33 @@ input[type="number"] {
   font-size: 19px;
   margin-bottom: 16px;
   border-radius: 18px;
-  border: 1px solid #ced4da; /* Borde estándar de Bootstrap */
-  background: #ffffff; /* Fondo blanco para claridad */
-  font-family: 'Arial Black', sans-serif; /* Cambia el estilo de las letras a Arial Black */
+  border: 1px solid #ced4da;
+  background: #ffffff;
+  font-family: 'Arial Black', sans-serif;
 }
 
 /* Botones generales con estilos modernos */
 .button {
   width: 100%;
-  padding: 18px; /* Ajusta el padding */
+  padding: 18px;
   border: none;
   border-radius: 8px;
   color: white;
-  background-color: #17a2b8; /* Azul turquesa de Bootstrap */
+  background-color: #17a2b8;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.2s;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  font-family: 'Arial Black', sans-serif; /* Cambia el estilo de las letras a Arial Black */
+  font-family: 'Arial Black', sans-serif;
 }
 
 .button:hover {
-  background-color: #138496; /* Oscurecer en hover */
+  background-color: #138496;
 }
 
 /* Iconos de FontAwesome integrados en botones */
-/* Estilos para botones con iconos de FontAwesome */
 .fa-user-circle, .fa-user, .fa-money-bill-alt, .fa-book, .fa-hand-holding-usd, .fa-thumbs-up, .fa-user-alt, .fa-print {
   margin-right: 9px;
-  color: #007bff; /* Color principal del icono que corresponde al azul de Bootstrap */
+  color: #007bff;
 }
 
 /* Estilos específicos para los botones que contienen estos iconos */
@@ -102,23 +104,23 @@ input[type="number"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 18px 36px; /* Ajusta el padding para botones más pequeños */
+  padding: 18px 36px;
   margin: 10px 5px;
-  font-size: 16px; /* Ajusta el tamaño del texto */
-  border-radius: 8px; /* Cambia a forma cuadrada con bordes ligeramente redondeados */
+  font-size: 16px;
+  border-radius: 8px;
   color: white;
   background-color: #17a2b8;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease; /* Transición suave para cambios de estado */
+  transition: all 0.3s ease;
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
-  font-family: 'Arial Black', sans-serif; /* Cambia el estilo de las letras a Arial Black */
+  font-family: 'Arial Black', sans-serif;
 }
 
 .selection-button:hover, .print-button:hover {
   background-color: #138496;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
-  transform: translateY(-3px); /* Efecto de levitación al pasar el cursor */
+  transform: translateY(-3px);
 }
 
 .print-button {
@@ -128,3 +130,4 @@ input[type="number"] {
 .print-button:hover {
   background-color: #5a6268;
 }
+
