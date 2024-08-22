@@ -1,3 +1,4 @@
+/* Contenedor principal */
 .display-container {
   font-family: 'Arial Black', sans-serif;
   overflow: hidden;
@@ -5,16 +6,38 @@
   flex-direction: column;
   padding: 20px;
   width: 60%;
-  margin: 20px 0 20px 200px; /* Márgenes: superior, derecho, inferior, izquierdo */
-  background: linear-gradient(to right, #ffffff, #e6e6e6); /* Fondo claro */
+  margin: 20px auto;
+  background: linear-gradient(to right, #ffffff, #e6e6e6);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilos de pasos */
+.identity-step, .attention-step, .service-step, .confirmation-step {
+  text-align: center;
+}
 
+/* Estilos de los encabezados */
+h2 {
+  color: #343a40;
+  font-family: 'Arial Black', sans-serif;
+  margin-bottom: 20px;
+}
 
-/* Configuración del teclado numérico */
-.numeric-keypad {
+/* Estilización de formularios y entradas de texto */
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 25px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+  border: 1px solid #ced4da;
+  background: #ffffff;
+  font-family: 'Arial Black', sans-serif;
+}
+
+/* Teclado numérico */
+.keyboard {
   display: grid;
   grid-template-columns: repeat(3, 100px);
   gap: 15px;
@@ -22,9 +45,11 @@
   margin: 0 auto;
   padding: 20px;
 }
+.numeric-button.zero {
+  grid-column: 2 / span 1;
+}
 
-/* Estilos para botones numéricos */
-.numeric-button {
+.keyboard button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,41 +67,13 @@
   font-family: 'Arial Black', sans-serif;
 }
 
-/* Aplicar esta regla específica al botón cero */
-.numeric-button.zero {
-  grid-column: 2 / span 1;
-}
-
-.numeric-button:hover {
+.keyboard button:hover {
   transform: scale(1.1);
   background-color: #0056b3;
 }
 
-/* Estilos de texto y títulos */
-h1, h2 {
-  color: #343a40;
-  text-align: center;
-  font-family: 'Arial Black', sans-serif;
-}
-
-/* Estilización de formularios y entradas de texto */
-form {
-  margin-top: 20px;
-}
-
-input[type="number"] {
-  width: 100%;
-  padding: 12px;
-  font-size: 19px;
-  margin-bottom: 16px;
-  border-radius: 18px;
-  border: 1px solid #ced4da;
-  background: #ffffff;
-  font-family: 'Arial Black', sans-serif;
-}
-
-/* Botones generales con estilos modernos */
-.button {
+/* Botón Siguiente */
+.next-button {
   width: 100%;
   padding: 18px;
   border: none;
@@ -85,27 +82,28 @@ input[type="number"] {
   background-color: #17a2b8;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: 'Arial Black', sans-serif;
+  margin-top: 20px;
 }
 
-.button:hover {
+.next-button:hover {
   background-color: #138496;
 }
 
-/* Iconos de FontAwesome integrados en botones */
-.fa-user-circle, .fa-user, .fa-money-bill-alt, .fa-book, .fa-hand-holding-usd, .fa-thumbs-up, .fa-user-alt, .fa-print {
-  margin-right: 9px;
-  color: #007bff;
+/* Estilos de botones de atención y servicio */
+.attention-buttons, .service-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-/* Estilos específicos para los botones que contienen estos iconos */
-.selection-button, .print-button {
+.attention-buttons button, .service-buttons button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 18px 36px;
-  margin: 10px 5px;
+  margin: 10px;
   font-size: 16px;
   border-radius: 8px;
   color: white;
@@ -117,17 +115,48 @@ input[type="number"] {
   font-family: 'Arial Black', sans-serif;
 }
 
-.selection-button:hover, .print-button:hover {
+.attention-buttons button:hover, .service-buttons button:hover {
   background-color: #138496;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
   transform: translateY(-3px);
 }
 
-.print-button {
+/* Botones de la etapa de confirmación */
+.confirmation-step button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 36px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  color: white;
   background-color: #6c757d;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+  font-family: 'Arial Black', sans-serif;
 }
 
-.print-button:hover {
+.confirmation-step button:hover {
   background-color: #5a6268;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+  transform: translateY(-3px);
+}
+
+/* Iconos de FontAwesome integrados en botones */
+button .fa {
+  margin-right: 9px;
+  color: white;
+}
+
+/* Mensajes de error */
+.error {
+  color: #f44336;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 

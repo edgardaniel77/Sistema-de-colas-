@@ -59,7 +59,7 @@ function USUARIOS(){
     
     /*POST USUARIOS - CRUD/DataBase*/
     const addUser = ()=>{
-        axios.post("http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=InsertUsuario",{
+        axios.post("http://localhost:5000/usuarios",{
             NOMBRE:NOMBRE,
             IDENTIFICACION:IDENTIFICACION,
             CORREO:CORREO,
@@ -80,33 +80,41 @@ function USUARIOS(){
     }
 
 
-    /*UPDATE USUARIOS - CRUD/DataBase*/
-    const UPDATE = ()=>{
-        axios.put("http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=UpdateUsuario",{
-            CODIGO:CODIGO,
-            NOMBRE:NOMBRE,
-            IDENTIFICACION:IDENTIFICACION,
-            CORREO:CORREO,
-            TELEFONO:TELEFONO,
-            PASSWORD:PASSWORD,
-            ROL:ROL,
-            AREA:AREA
-        }).then(()=>{
+    const UPDATE = () => {
+        // Asegúrate de que CODIGO tenga el valor correcto del usuario a actualizar
+        axios.put(`http://localhost:5000/usuarios/${CODIGO}`, {
+            NOMBRE: NOMBRE,
+            IDENTIFICACION: IDENTIFICACION,
+            CORREO: CORREO,
+            TELEFONO: TELEFONO,
+            PASSWORD: PASSWORD,
+            ROL: ROL,
+            AREA: AREA
+        }).then(() => {
             limpiarCampos();
             Cancelar();
             AlertaPOP.fire({
                 title: <strong>!Actualización Exitosa!</strong>,
                 html: <i>!El Usuario {NOMBRE} fue actualizado con Éxito!</i>,
                 icon: 'success',
-                timer:3000                            
-            })             
+                timer: 3000
+            })
+        }).catch((error) => {
+            console.error('Error al actualizar el usuario:', error);
+            AlertaPOP.fire({
+                title: <strong>!Error!</strong>,
+                html: <i>No se pudo actualizar el Usuario {NOMBRE}. Intente nuevamente.</i>,
+                icon: 'error',
+                timer: 3000
+            });
         });
     }
+    
 
 
     /*GET USUARIOS - DATAGRID*/
     const getUser = ()=>{
-        axios.get("http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=GetUsuarios").then((response)=>{
+        axios.get("http://localhost:5000/usuarios").then((response)=>{
             setUsuarios(response.data);
         });
     }
@@ -130,34 +138,39 @@ function USUARIOS(){
 
 
     /*DELETE USUARIOS - CRUD/DataBase*/
-    const BorrarUser = (val)=>{
-
+    const BorrarUser = (val) => {
         Swal.fire({
             title: 'Confirma la Eliminación?',
-            html: "<i>¿Desea eliminar el Usuario <strong>"+val.NOMBRE+"</strong>?</i>",
-            icon:'warning',
+            html: "<i>¿Desea eliminar el Usuario <strong>" + val.NOMBRE + "</strong>?</i>",
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sí, eliminarlo!',
-            
-        }).then((result)=>{
-            if(result.isConfirmed) {
-                axios.delete(`http://localhost:90/INJUPEN_API_TEST/CONTROL/USUARIOS.PHP?op=DeleteUsuario/${val.CODIGO}`).then(()=>{
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Usa el CODIGO del usuario para construir la URL de la API
+                axios.delete(`http://localhost:5000/usuarios/${val.CODIGO}`).then(() => {
                     limpiarCampos();
                     Cancelar();
                     
                     Swal.fire(
                         'Eliminado!',
-                        val.NOMBRE+ ' fue eliminado.',
+                        val.NOMBRE + ' fue eliminado.',
                         'success'
                     );  
-                                       
-                });                
+                }).catch(error => {
+                    // Manejo de errores
+                    Swal.fire(
+                        'Error!',
+                        'Hubo un problema al eliminar el usuario.',
+                        'error'
+                    );
+                });
             }
-        });         
+        });
     }
-
+    
     
     
 
@@ -271,7 +284,7 @@ function USUARIOS(){
                                                     
                                                     <button type="button" onClick={()=>{
                                                         BorrarUser(val);
-                                                    }}  className="btn btn-danger">Elimiar</button>
+                                                    }}  className="btn btn-danger">Eliminar</button>
                                                 </div>
                                             </td>
                                         </tr>                      

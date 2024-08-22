@@ -30,12 +30,7 @@ const Sidebar = ({ isLoggedIn, handleLogout, toggleSidebar, isCollapsed, showSid
           <NavLink to="/sala-espera" activeClassName="active">
             <FontAwesomeIcon icon={faUsers} /> {!isCollapsed && 'Sala de Espera'}
           </NavLink>
-        </li>
-        <li className="nav-item">
-          <NavLink to="/llamadas" activeClassName="active">
-            <FontAwesomeIcon icon={faPhone} /> {!isCollapsed && 'Llamadas'}
-          </NavLink>
-        </li>
+        </li>        
         <li className="nav-item">
           <NavLink to="/gestion-usuarios" activeClassName="active">
             <FontAwesomeIcon icon={faUserCog} /> {!isCollapsed && 'Gestión de Usuarios'}

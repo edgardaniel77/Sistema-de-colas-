@@ -11,9 +11,9 @@ const Display = () => {
   const [attentionType, setAttentionType] = useState('');
   const [service, setService] = useState('');
   const [errors, setErrors] = useState({});
+  const [currentTicketNumber, setCurrentTicketNumber] = useState(''); // Add state for the current ticket number
   const inputRef = useRef(null);
-  const { addTicket, ticketCounter, tickets } = useContext(TicketContext);
-  
+  const { addTicket, tickets } = useContext(TicketContext);
 
   const validateIdentityNumber = () => {
     if (identityNumber.trim() === '') {
@@ -41,17 +41,32 @@ const Display = () => {
     setStep(3);
   };
 
-  const handleServiceSelection = (serviceSelected) => {
+  const handleServiceSelection = async (serviceSelected) => {
     setService(serviceSelected);
-    const newTicket = {
-      identityNumber,
-      attentionType,
-      service: serviceSelected,
-      number: `${serviceSelected.slice(0, 2).toUpperCase()}-${ticketCounter + 1}`
-    };
-    addTicket(newTicket);
-    setIdentityNumber('');
-    setStep(4);
+    const newTicket = addTicket(identityNumber, attentionType, serviceSelected);
+    setCurrentTicketNumber(newTicket.TICKET); // Save the ticket number for later use
+
+    try {
+      const response = await fetch('http://localhost:5000/tickets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newTicket)
+      });
+
+      if (response.ok) {
+        setIdentityNumber('');
+        setStep(4);
+      } else {
+        const errorData = await response.json();
+        console.error('Error al crear el ticket:', errorData);
+        setErrors({ general: 'Hubo un error al crear el ticket. Inténtelo de nuevo.' });
+      }
+    } catch (error) {
+      console.error('Error de red al crear el ticket:', error);
+      setErrors({ general: 'Hubo un error de red. Inténtelo de nuevo más tarde.' });
+    }
   };
 
   const handleNumberClick = (number) => {
@@ -78,33 +93,10 @@ const Display = () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [handleKeyPress]);
-
   const printTicket = () => {
-    let ticketPrefix = '';
-    switch (service) {
-      case 'Secretaría General':
-        ticketPrefix = 'SG';
-        break;
-      case 'Préstamos':
-        ticketPrefix = 'PR';
-        break;
-      case 'Cartera Y Cobro':
-        ticketPrefix = 'CC';
-        break;
-      case 'Beneficios':
-        ticketPrefix = 'BN';
-        break;
-      case 'Planilla Jubilados':
-        ticketPrefix = 'PJ';
-        break;
-      default:
-        ticketPrefix = 'NA';
-    }
-  
-    const formattedNumber = `${ticketPrefix}-${ticketCounter.toString().padStart(3, '0')}`;
-    const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString();
-    const formattedTime = currentDate.toLocaleTimeString();
+    const formattedDate = new Date().toLocaleDateString();
+    const formattedTime = new Date().toLocaleTimeString();
+    const formattedNumber = currentTicketNumber; // Use the current ticket number
   
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.width;
@@ -124,7 +116,7 @@ const Display = () => {
     // Ticket Info
     pdf.setFontSize(50);
     pdf.setFont('helvetica', 'bold');
-    const ticketText = `Ticket: ${formattedNumber}`;
+    const ticketText = `TICKET: ${formattedNumber}`;
     const ticketTextWidth = pdf.getTextWidth(ticketText);
     pdf.text(ticketText, (pageWidth - ticketTextWidth) / 2, 50);
     
@@ -158,105 +150,92 @@ const Display = () => {
   
     pdf.save('ticket.pdf');
   
-    // Redirige al paso 1 para reiniciar el flujo
+    // Añadir un retraso antes de regresar al paso 1 para asegurar que el PDF se haya guardado
     setTimeout(() => {
       setStep(1);
-    }, 1000); // Ajusta el tiempo si es necesario para asegurar que el PDF se haya guardado
+    }, 1000); // 1000 milisegundos (1 segundo) de espera
   };
   
-  
-  
-  const handleBackClick = () => {
-    setStep((prevStep) => prevStep - 1);
-  };
 
   return (
     <div className="display-container">
-      <h1>Bienvenido a INJUPEMP</h1>
       {step === 1 && (
-        <form onSubmit={handleIdentitySubmit}>
-          <label>
-            Ingrese su Número de Identidad:
+        <div className="identity-step">
+          <h2>Ingrese su número de identidad</h2>
+          <form onSubmit={handleIdentitySubmit}>
             <input
+              ref={inputRef}
               type="number"
               value={identityNumber}
               onChange={(e) => setIdentityNumber(e.target.value)}
-              required
-              ref={inputRef}
+              maxLength="13"
             />
-            {errors.identityNumber && <span className="error">{errors.identityNumber}</span>}
-          </label>
-          <div className="numeric-keypad">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number, index) => (
-              <button
-                key={number}
-                className="numeric-button"
-                onClick={() => handleNumberClick(number.toString())}
-                style={{ gridColumn: ((index % 3) + 1) }}
-                type="button"
-              >
-                {number}
+            {errors.identityNumber && <p className="error">{errors.identityNumber}</p>}
+            <div className="keyboard">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
+                <button key={number} type="button" onClick={() => handleNumberClick(number.toString())}>
+                  {number}
+                </button>
+              ))}
+              <button className="numeric-button zero" onClick={() => handleNumberClick('0')} type="button">
+                0
               </button>
-            ))}
-            <button className="numeric-button zero" onClick={() => handleNumberClick('0')} type="button">
-              0
+              <button type="button" onClick={handleBackspaceClick}>
+                ←
+              </button>
+            </div>
+            <button type="submit" className="next-button">
+              Siguiente
             </button>
-            <button className="numeric-button backspace" onClick={handleBackspaceClick} type="button">
-              ←
+          </form>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="attention-step">
+          <h2>Seleccione el tipo de atención</h2>
+          <div className="attention-buttons">
+            <button onClick={() => handleAttentionType('Normal')}>
+              <FontAwesomeIcon icon={faUser} /> Normal
+            </button>
+            <button onClick={() => handleAttentionType('Preferencial')}>
+              <FontAwesomeIcon icon={faUserAlt} /> Preferencial
             </button>
           </div>
-          <button className="button next-button" type="submit">Siguiente</button>
-        </form>
-      )}
-      {step === 2 && (
-        <div>
-          <h2>Selecciona Atención</h2>
-          <button className="button selection-button" onClick={() => handleAttentionType('Preferencial')}>
-            <FontAwesomeIcon icon={faUserCircle} /> Atención Preferencial
-          </button>
-          <button className="button selection-button" onClick={() => handleAttentionType('Normal')}>
-            <FontAwesomeIcon icon={faUser} /> Atención Normal
-          </button>
-          <button className="button back-button" onClick={handleBackClick}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Volver
-          </button>
         </div>
       )}
+
       {step === 3 && (
-        <div>
-          <h2>Selecciona Área</h2>
-          <button className="button selection-button" onClick={() => handleServiceSelection('Secretaría General')}>
-            <FontAwesomeIcon icon={faMoneyBillAlt} /> Secretaría General
-          </button>
-          <button className="button selection-button" onClick={() => handleServiceSelection('Préstamos')}>
-            <FontAwesomeIcon icon={faBook} /> Préstamos
-          </button>
-          <button className="button selection-button" onClick={() => handleServiceSelection('Cartera Y Cobro')}>
-            <FontAwesomeIcon icon={faHandHoldingUsd} /> Cartera Y Cobro
-          </button>
-          <button className="button selection-button" onClick={() => handleServiceSelection('Beneficios')}>
-            <FontAwesomeIcon icon={faThumbsUp} /> Beneficios
-          </button>
-          <button className="button selection-button" onClick={() => handleServiceSelection('Planilla Jubilados')}>
-            <FontAwesomeIcon icon={faUserAlt} /> Planilla Jubilados
-          </button>
-          <button className="button back-button" onClick={handleBackClick}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Volver
-          </button>
+        <div className="service-step">
+          <h2>Seleccione un servicio</h2>
+          <div className="service-buttons">
+            <button onClick={() => handleServiceSelection('Secretaría General')}>
+              <FontAwesomeIcon icon={faBook} /> Secretaría General
+            </button>
+            <button onClick={() => handleServiceSelection('Préstamos')}>
+              <FontAwesomeIcon icon={faMoneyBillAlt} /> Préstamos
+            </button>
+            <button onClick={() => handleServiceSelection('Cartera Y Cobro')}>
+              <FontAwesomeIcon icon={faHandHoldingUsd} /> Cartera Y Cobro
+            </button>
+            <button onClick={() => handleServiceSelection('Beneficios')}>
+              <FontAwesomeIcon icon={faThumbsUp} /> Beneficios
+            </button>
+            <button onClick={() => handleServiceSelection('Planilla Jubilados')}>
+              <FontAwesomeIcon icon={faUserCircle} /> Planilla Jubilados
+            </button>
+          </div>
         </div>
       )}
+
       {step === 4 && (
-        <div>
-          <h2>Confirmación de Servicio</h2>
-          <p>Servicio seleccionado: {service}</p>
-          <p>Tipo de atención: {attentionType}</p>
-          <p>Número de ticket: {tickets[tickets.length - 1]?.number}</p>
-          <button className="button print-button" onClick={printTicket}>
+        <div className="confirmation-step">
+          <h2>¡Gracias! Su ticket ha sido creado.</h2>
+          {errors.general && <p className="error">{errors.general}</p>}
+          <button onClick={printTicket}>
             <FontAwesomeIcon icon={faPrint} /> Imprimir Ticket
           </button>
-          <button className="button back-button" onClick={handleBackClick}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Volver
-          </button>
+         
         </div>
       )}
     </div>

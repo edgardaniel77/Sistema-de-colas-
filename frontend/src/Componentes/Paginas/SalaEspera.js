@@ -31,9 +31,9 @@ const SalaEspera = () => {
         <div className="ticket-list">
           {Object.entries(currentTickets).length > 0 ? (
             Object.entries(currentTickets).map(([area, ticket]) => (
-              <div key={ticket.number} className="ticket-area">
+              <div key={ticket.TICKET} className="ticket-area">
                 <h3> {area} </h3>
-                <p> {ticket.number} </p>
+                <p> {ticket.TICKET} </p>
                 
               </div>
             ))
@@ -56,4 +56,5 @@ const SalaEspera = () => {
 };
 
 export default SalaEspera;
+
 

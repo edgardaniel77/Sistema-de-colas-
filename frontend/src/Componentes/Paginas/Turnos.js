@@ -15,13 +15,19 @@ const Turnos = () => {
   const [transferArea, setTransferArea] = useState(null);
   const [notification, setNotification] = useState(null);
   const [showCancelButton, setShowCancelButton] = useState(false);
-  const [showWaitingList, setShowWaitingList] = useState(false);
 
-  const { tickets, currentTickets, cancelledTickets, callNextTicket, finishTicket, transferTicket, cancelTicket } = useContext(TicketContext);
+  const {
+    ticketsByArea,
+    currentTickets,
+    cancelledTickets,
+    callNextTicket,
+    finishTicket,
+    transferTicket,
+    cancelTicket
+  } = useContext(TicketContext);
 
   const handleAreaSelection = (area) => {
     setSelectedArea(area);
-    setShowWaitingList(true);
     setShowCancelButton(false);
   };
 
@@ -29,9 +35,6 @@ const Turnos = () => {
     if (selectedArea) {
       callNextTicket(selectedArea);
       setShowCancelButton(true);
-      // Move the called ticket to the top of the list
-      setShowWaitingList(false);
-      setTimeout(() => setShowWaitingList(true), 0); // Force re-render
     }
   };
 
@@ -46,15 +49,14 @@ const Turnos = () => {
     if (selectedArea) {
       cancelTicket(selectedArea);
       setShowCancelButton(false);
-      setShowWaitingList(false);
     }
   };
-  
+
   const handleTransferTicket = () => {
     if (currentTickets[selectedArea] && transferArea) {
       const ticketToTransfer = currentTickets[selectedArea];
       transferTicket(ticketToTransfer, transferArea);
-      setNotification(`Ticket ${ticketToTransfer.number} transferido a ${transferArea}`);
+      setNotification(`Ticket ${ticketToTransfer.TICKET} transferido a ${transferArea}`);
       setTransferArea(null);
     } else {
       setNotification("Seleccione un área para transferir el ticket.");
@@ -83,7 +85,7 @@ const Turnos = () => {
           </div>
           {currentTickets[selectedArea] && (
             <div className="ticket-details">
-              <p>Estado actual: {currentTickets[selectedArea].number} - {currentTickets[selectedArea].service}</p>
+              <p>Estado actual: {currentTickets[selectedArea].TICKET} - {currentTickets[selectedArea].SERVICIO}</p>
               <button className="btn-finalizar" onClick={finishCurrentTicket}>Finalizar</button>
               {showCancelButton && (
                 <button className="btn-anular" onClick={cancelCurrentTicket}>Anular</button>
@@ -101,34 +103,29 @@ const Turnos = () => {
               </div>
             </div>
           )}
-          {showWaitingList && (
-            <div className="waiting-list">
-              <h3>Lista de Espera para {selectedArea}</h3>
-              <ul>
-                {tickets
-                  .filter(ticket => ticket.service === selectedArea)
-                  .sort((a, b) => a.number - b.number) // Sort by ticket number
-                  .map((ticket, index) => (
-                    <li key={index}>
-                      <strong>Ticket:</strong> {ticket.number}
-                    </li>
-                  ))
-                }
-                {tickets.filter(ticket => ticket.service === selectedArea).length === 0 && (
-                  <p>No hay tickets en espera para esta área.</p>
-                )}
-              </ul>
-            </div>
-          )}
+          <div className="waiting-list">
+            <h3>Lista de Espera para {selectedArea}</h3>
+            <ul>
+              {ticketsByArea[selectedArea]?.length > 0 ? (
+                ticketsByArea[selectedArea].map((ticket, index) => (
+                  <li key={index}>
+                    <strong>Ticket:</strong> {ticket.TICKET}
+                  </li>
+                ))
+              ) : (
+                <p>No hay tickets en espera para esta área.</p>
+              )}
+            </ul>
+          </div>
           <div className="cancelled-tickets">
             <h3>Tickets Anulados</h3>
             <ul>
-              {cancelledTickets.filter(ticket => ticket.service === selectedArea).map((ticket, index) => (
+              {cancelledTickets.filter(ticket => ticket.SERVICIO === selectedArea).map((ticket, index) => (
                 <li key={index}>
-                  <strong>Ticket:</strong> {ticket.number}
+                  <strong>Ticket:</strong> {ticket.TICKET}
                 </li>
               ))}
-              {cancelledTickets.filter(ticket => ticket.service === selectedArea).length === 0 && (
+              {cancelledTickets.filter(ticket => ticket.SERVICIO === selectedArea).length === 0 && (
                 <p>No hay tickets anulados para esta área.</p>
               )}
             </ul>

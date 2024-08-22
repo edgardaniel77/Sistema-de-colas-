@@ -4,7 +4,7 @@ import './Inicio.css';
 import { TicketContext } from './TicketContext';
 
 const Inicio = () => {
-  const {  attendedTickets, cancelledTickets, currentTickets, waitingTickets } = useContext(TicketContext);
+  const { attendedTickets, cancelledTickets, currentTickets, waitingTickets } = useContext(TicketContext);
   const [datosMostrados, setDatosMostrados] = useState([]);
   const barChartRef = useRef();
   const pieChartRef = useRef();
@@ -20,7 +20,7 @@ const Inicio = () => {
         datasets: [{
           label: 'Cantidad de Tickets',
           backgroundColor: ['#FF6384', '#36A2EB'],
-          data: [0, datosMostrados.length]  // Reemplaza el 0 con los datos de ayer si los tienes
+          data: [0, datosMostrados.length]  // Cambia 0 por la cantidad de tickets de ayer si los tienes
         }]
       },
       options: {
@@ -90,8 +90,9 @@ const Inicio = () => {
           <tbody>
             {datosMostrados.map((dato, index) => (
               <tr key={index}>
-                <td>{dato.number}</td>
-                <td>{dato.service}</td>
+                {/* Asegúrate de que las propiedades de dato sean correctas */}
+                <td>{dato.TICKET}</td>
+                <td>{dato.SERVICIO}</td>
                 <td>{dato.startTime ? new Date(dato.startTime).toLocaleTimeString() : 'N/A'}</td>
                 <td>{dato.endTime ? new Date(dato.endTime).toLocaleTimeString() : 'N/A'}</td>
               </tr>
